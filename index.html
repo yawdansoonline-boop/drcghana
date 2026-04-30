@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRCGHANA — Architectural & Structural Design Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A030;
+    --gold-light: #E8C96A;
+    --green: #1B6B35;
+    --green-light: #2A8A4A;
+    --green-dim: #14522A;
+    --dark: #0A0E0B;
+    --dark-2: #121710;
+    --dark-3: #181E14;
+    --dark-4: #222B1C;
+    --mid: #344028;
+    --text-dim: #7A8A74;
+    --text-mid: #A8B89E;
+    --text-light: #E0ECD8;
+    --white: #F2F7EE;
+    --accent-red: #C44B2B;
+    --radius: 2px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--dark); color: var(--text-light); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  button { cursor: pointer; font-family: 'DM Sans', sans-serif; border: none; background: none; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: var(--mid); border-radius: 2px; }
+
+  /* TOP BAR */
+  .top-bar { background: var(--green-dim); border-bottom: 0.5px solid rgba(201,160,48,0.2); padding: 8px 4rem; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+  .top-bar-left { display: flex; gap: 2rem; align-items: center; }
+  .top-bar-right { display: flex; gap: 1.25rem; align-items: center; }
+  .top-bar a { display: flex; align-items: center; gap: 6px; color: var(--text-mid); transition: color 0.2s; }
+  .top-bar a:hover { color: var(--gold); }
+  .top-bar-divider { width: 0.5px; height: 14px; background: rgba(255,255,255,0.15); }
+
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 4rem; height: 76px; background: rgba(10,14,11,0.97); backdrop-filter: blur(16px); border-bottom: 0.5px solid rgba(27,107,53,0.3); }
+  .nav-logo-wrap { display: flex; align-items: center; gap: 12px; }
+  .nav-logo-img { height: 52px; width: 52px; border-radius: 50%; object-fit: cover; }
+  .nav-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; line-height: 1.1; }
+  .nav-logo-text span { color: var(--text-dim); font-weight: 300; font-style: italic; font-size: 11px; display: block; letter-spacing: 0.35em; margin-top: 1px; }
+  .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+  .nav-links a { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-mid); transition: color 0.2s; }
+  .nav-links a:hover { color: var(--green-light); }
+  .nav-right { display: flex; align-items: center; gap: 1rem; }
+  .hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--gold); border-radius: 2px; }
+  .cart-btn { display: flex; align-items: center; gap: 8px; padding: 9px 22px; border: 0.5px solid var(--gold); color: var(--gold); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; transition: all 0.2s; border-radius: var(--radius); }
+  .cart-btn:hover { background: var(--gold); color: var(--dark); }
+  .cart-count { background: var(--gold); color: var(--dark); border-radius: 50%; width: 18px; height: 18px; font-size: 11px; font-weight: 500; display: flex; align-items: center; justify-content: center; }
+
+  /* MOBILE MENU */
+  .mobile-menu { display: none; position: fixed; inset: 0; background: rgba(10,14,11,0.98); z-index: 200; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a { font-size: 26px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-mid); font-family: 'Cormorant Garamond', serif; font-weight: 300; transition: color 0.2s; }
+  .mobile-menu a:hover { color: var(--gold); }
+  .mobile-menu-close { position: absolute; top: 1.5rem; right: 1.5rem; font-size: 28px; color: var(--text-dim); padding: 8px; background: none; border: none; cursor: pointer; }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 4rem 6rem; position: relative; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,14,11,0.15) 0%, rgba(10,14,11,0.9) 65%), url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1600&q=80') center/cover no-repeat; }
+  .hero-content { position: relative; z-index: 1; max-width: 720px; }
+  .hero-eyebrow { font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--green-light); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; display: inline-block; width: 32px; height: 1px; background: var(--green-light); }
+  .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(44px, 7vw, 92px); font-weight: 300; line-height: 1.0; color: var(--white); margin-bottom: 1.5rem; }
+  .hero h1 em { font-style: italic; color: var(--gold-light); }
+  .hero p { font-size: 15px; color: var(--text-mid); max-width: 480px; margin-bottom: 2.5rem; font-weight: 300; line-height: 1.8; }
+  .hero-cta { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+  .btn-primary { padding: 14px 36px; background: var(--green); color: var(--white); font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 500; border-radius: var(--radius); transition: all 0.25s; border: 0.5px solid var(--green); }
+  .btn-primary:hover { background: var(--green-light); }
+  .btn-ghost { padding: 14px 36px; border: 0.5px solid rgba(201,160,48,0.45); color: var(--gold); font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; border-radius: var(--radius); transition: all 0.2s; }
+  .btn-ghost:hover { background: rgba(201,160,48,0.1); }
+  .hero-stats { position: absolute; right: 4rem; bottom: 6rem; z-index: 1; display: flex; flex-direction: column; gap: 2rem; text-align: right; }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; color: var(--gold-light); line-height: 1; }
+  .stat-label { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); }
+
+  /* SECTIONS */
+  .section { padding: 6rem 4rem; }
+  .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 3rem; }
+  .section-eyebrow { font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--green-light); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 10px; }
+  .section-eyebrow::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--green-light); }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 4vw, 50px); font-weight: 300; color: var(--white); line-height: 1.1; }
+  .section-title em { font-style: italic; color: var(--gold-light); }
+  .view-all { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); border-bottom: 0.5px solid var(--mid); padding-bottom: 2px; transition: all 0.2s; white-space: nowrap; align-self: flex-start; margin-bottom: 4px; }
+  .view-all:hover { color: var(--green-light); border-color: var(--green-light); }
+
+  /* CATEGORIES */
+  .categories-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--mid); border: 0.5px solid var(--mid); }
+  .cat-card { position: relative; overflow: hidden; aspect-ratio: 3/4; cursor: pointer; background: var(--dark-2); }
+  .cat-card img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.35) saturate(0.6); transition: all 0.6s ease; }
+  .cat-card:hover img { filter: brightness(0.5) saturate(0.8); transform: scale(1.04); }
+  .cat-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 1.5rem; background: linear-gradient(0deg, rgba(10,14,11,0.95) 0%, transparent 60%); }
+  .cat-tag { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--green-light); margin-bottom: 0.5rem; }
+  .cat-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; color: var(--white); margin-bottom: 0.35rem; }
+  .cat-count { font-size: 11px; color: var(--text-dim); }
+
+  .divider { height: 0.5px; background: var(--mid); margin: 0 4rem; }
+
+  /* PRODUCTS */
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+  .product-card { background: var(--dark-2); border: 0.5px solid var(--dark-4); border-radius: var(--radius); overflow: hidden; transition: border-color 0.3s, transform 0.3s; cursor: pointer; }
+  .product-card:hover { border-color: rgba(27,107,53,0.5); transform: translateY(-3px); }
+  .product-img { position: relative; aspect-ratio: 4/3; overflow: hidden; }
+  .product-img img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7) saturate(0.75); transition: all 0.5s ease; }
+  .product-card:hover .product-img img { filter: brightness(0.9) saturate(1); }
+  .product-badge { position: absolute; top: 12px; left: 12px; background: var(--gold); color: var(--dark); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 4px 10px; font-weight: 500; }
+  .product-badge.new { background: var(--green); color: var(--white); }
+  .product-body { padding: 1.25rem 1.25rem 1.5rem; }
+  .product-category { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--green-light); margin-bottom: 0.5rem; }
+  .product-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: var(--white); margin-bottom: 0.5rem; line-height: 1.2; }
+  .product-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 1rem; line-height: 1.6; min-height: 40px; }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold-light); }
+  .product-price .currency { font-size: 14px; color: var(--text-dim); margin-right: 2px; }
+  .add-to-cart { padding: 8px 18px; border: 0.5px solid rgba(27,107,53,0.5); color: var(--green-light); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; border-radius: var(--radius); transition: all 0.2s; }
+  .add-to-cart:hover { background: var(--green); color: var(--white); border-color: var(--green); }
+
+  /* WHY US */
+  .why-strip { background: var(--dark-3); padding: 5rem 4rem; border-top: 0.5px solid var(--dark-4); border-bottom: 0.5px solid var(--dark-4); }
+  .why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+  .why-item { border-left: 1px solid rgba(27,107,53,0.35); padding-left: 1.5rem; }
+  .why-icon { font-size: 22px; margin-bottom: 0.75rem; color: var(--green-light); }
+  .why-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--white); margin-bottom: 0.4rem; }
+  .why-desc { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+
+  /* FEATURED BANNER */
+  .featured-banner { margin: 0 4rem; position: relative; overflow: hidden; border-radius: var(--radius); aspect-ratio: 21/8; display: flex; align-items: center; border: 0.5px solid rgba(27,107,53,0.2); }
+  .featured-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.3) saturate(0.6); }
+  .featured-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,14,11,0.75) 0%, transparent 70%); }
+  .featured-banner-content { position: relative; z-index: 1; padding: 0 4rem; }
+  .featured-banner-content .eyebrow { font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--green-light); margin-bottom: 1rem; }
+  .featured-banner-content h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4vw, 52px); font-weight: 300; color: var(--white); line-height: 1.1; margin-bottom: 1.5rem; }
+  .featured-banner-content h2 em { font-style: italic; color: var(--gold-light); }
+
+  /* TESTIMONIALS */
+  .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .testi-card { background: var(--dark-2); border: 0.5px solid var(--dark-4); padding: 2rem; border-radius: var(--radius); position: relative; }
+  .testi-card::before { content: '\201C'; position: absolute; top: 1rem; right: 1.5rem; font-family: 'Cormorant Garamond', serif; font-size: 80px; color: rgba(27,107,53,0.15); line-height: 1; }
+  .testi-stars { color: var(--gold); font-size: 13px; margin-bottom: 1rem; letter-spacing: 2px; }
+  .testi-text { font-size: 14px; color: var(--text-mid); line-height: 1.8; margin-bottom: 1.5rem; }
+  .testi-author { font-size: 12px; color: var(--text-dim); }
+  .testi-author strong { color: var(--white); display: block; font-weight: 400; font-size: 14px; }
+
+  /* CONTACT */
+  .contact-strip { background: var(--green-dim); padding: 4rem; border-top: 0.5px solid rgba(27,107,53,0.4); border-bottom: 0.5px solid rgba(27,107,53,0.4); }
+  .contact-strip-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+  .contact-strip h2 { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; color: var(--white); line-height: 1.1; margin-bottom: 0.75rem; }
+  .contact-strip h2 em { font-style: italic; color: var(--gold-light); }
+  .contact-strip p { font-size: 14px; color: var(--text-dim); line-height: 1.7; }
+  .contact-items { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-item { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.25rem; background: rgba(10,14,11,0.4); border: 0.5px solid rgba(27,107,53,0.25); border-radius: var(--radius); transition: border-color 0.2s; color: inherit; }
+  .contact-item:hover { border-color: rgba(201,160,48,0.4); }
+  .contact-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(27,107,53,0.3); flex-shrink: 0; color: var(--green-light); }
+  .contact-label { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); }
+  .contact-value { font-size: 14px; color: var(--white); margin-top: 2px; }
+
+  /* NEWSLETTER */
+  .newsletter { background: var(--dark-3); padding: 5rem 4rem; text-align: center; border-top: 0.5px solid var(--dark-4); border-bottom: 0.5px solid var(--dark-4); }
+  .newsletter h2 { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; margin-bottom: 0.75rem; color: var(--white); }
+  .newsletter p { color: var(--text-dim); font-size: 14px; margin-bottom: 2rem; }
+  .newsletter-form { display: flex; max-width: 460px; margin: 0 auto; }
+  .newsletter-form input { flex: 1; padding: 12px 16px; background: var(--dark-4); border: 0.5px solid var(--mid); color: var(--white); font-size: 14px; font-family: 'DM Sans', sans-serif; border-right: none; border-radius: var(--radius) 0 0 var(--radius); outline: none; }
+  .newsletter-form input::placeholder { color: var(--text-dim); }
+  .newsletter-form button { padding: 12px 28px; background: var(--green); color: var(--white); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; border-radius: 0 var(--radius) var(--radius) 0; transition: background 0.2s; }
+  .newsletter-form button:hover { background: var(--green-light); }
+
+  /* FOOTER */
+  footer { background: var(--dark-3); border-top: 0.5px solid rgba(27,107,53,0.2); padding: 5rem 4rem 2rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 4rem; }
+  .footer-brand .logo-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+  .footer-logo-img { height: 56px; width: 56px; border-radius: 50%; object-fit: cover; }
+  .footer-brand .logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; letter-spacing: 0.15em; color: var(--gold); text-transform: uppercase; }
+  .footer-brand p { font-size: 13px; color: var(--text-dim); line-height: 1.8; max-width: 280px; }
+  .footer-social { display: flex; gap: 10px; margin-top: 1.5rem; }
+  .social-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 0.5px solid var(--mid); color: var(--text-dim); transition: all 0.2s; }
+  .social-btn:hover { background: var(--green-dim); border-color: var(--green-light); color: var(--white); }
+  .social-btn.facebook:hover { background: #1877F2; border-color: #1877F2; color: white; }
+  .social-btn.tiktok:hover { background: #000; border-color: #69C9D0; color: #69C9D0; }
+  .footer-col h4 { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 1.25rem; }
+  .footer-col a { display: flex; align-items: center; gap: 7px; font-size: 14px; color: var(--text-mid); margin-bottom: 0.75rem; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--gold); }
+  .footer-bottom { border-top: 0.5px solid var(--dark-4); padding-top: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+  .footer-bottom p { font-size: 12px; color: var(--text-dim); }
+
+  /* FILTER */
+  .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+  .filter-btn { padding: 8px 18px; border: 0.5px solid var(--dark-4); color: var(--text-dim); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; border-radius: 20px; transition: all 0.2s; }
+  .filter-btn:hover { border-color: var(--green-light); color: var(--green-light); }
+  .filter-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
+
+  /* CART */
+  .cart-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.6); }
+  .cart-overlay.open { display: block; }
+  .cart-drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 201; width: 420px; background: var(--dark-2); border-left: 0.5px solid var(--dark-4); transform: translateX(100%); transition: transform 0.35s ease; display: flex; flex-direction: column; }
+  .cart-drawer.open { transform: translateX(0); }
+  .cart-header { padding: 1.5rem 1.75rem; border-bottom: 0.5px solid var(--dark-4); display: flex; align-items: center; justify-content: space-between; }
+  .cart-header h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--white); }
+  .close-cart { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--text-dim); font-size: 20px; transition: color 0.2s; }
+  .close-cart:hover { color: var(--white); }
+  .cart-items { flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem; }
+  .cart-empty { text-align: center; padding: 4rem 1rem; }
+  .cart-empty p { color: var(--text-dim); font-size: 14px; margin-top: 0.5rem; }
+  .cart-empty .icon { font-size: 40px; }
+  .cart-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 0.5px solid var(--dark-4); align-items: flex-start; }
+  .cart-item img { width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius); flex-shrink: 0; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-size: 14px; color: var(--white); margin-bottom: 2px; }
+  .cart-item-price { font-size: 13px; color: var(--gold); }
+  .cart-item-remove { font-size: 18px; color: var(--text-dim); transition: color 0.2s; padding: 0 4px; }
+  .cart-item-remove:hover { color: var(--accent-red); }
+  .cart-footer { padding: 1.5rem 1.75rem; border-top: 0.5px solid var(--dark-4); }
+  .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+  .cart-total .label { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); }
+  .cart-total .amount { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--gold-light); }
+  .checkout-btn { width: 100%; padding: 14px; background: var(--green); color: var(--white); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500; border-radius: var(--radius); transition: background 0.2s; }
+  .checkout-btn:hover { background: var(--green-light); }
+  .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--dark-3); border: 0.5px solid var(--green-light); color: var(--white); padding: 12px 24px; border-radius: var(--radius); font-size: 13px; z-index: 300; transition: transform 0.35s ease; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .top-bar { padding: 8px 1.25rem; flex-direction: column; gap: 6px; }
+    .top-bar-left, .top-bar-right { flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+    .top-bar-divider { display: none; }
+    nav { padding: 0 1.25rem; height: 66px; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .nav-logo-img { height: 42px; }
+    .nav-logo-text { font-size: 16px; }
+    .nav-logo-text span { font-size: 9px; }
+    .cart-btn { padding: 8px 14px; font-size: 11px; }
+    .hero { padding: 0 1.25rem 3.5rem; }
+    .hero h1 { font-size: 38px; }
+    .hero p { font-size: 14px; }
+    .hero-cta { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+    .btn-primary, .btn-ghost { text-align: center; padding: 14px 24px; }
+    .hero-stats { position: static; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; margin-top: 2.5rem; text-align: left; }
+    .stat-num { font-size: 30px; }
+    .section { padding: 3.5rem 1.25rem; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 2rem; }
+    .section-title { font-size: 30px; }
+    .categories-grid { grid-template-columns: 1fr; }
+    .cat-card { aspect-ratio: 16/9; }
+    .divider { margin: 0 1.25rem; }
+    .products-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .filter-bar { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+    .filter-btn { white-space: nowrap; flex-shrink: 0; }
+    .featured-banner { margin: 0 1.25rem; aspect-ratio: auto; min-height: 240px; }
+    .featured-banner-content { padding: 1.5rem; }
+    .featured-banner-content h2 { font-size: 24px; }
+    .why-strip { padding: 3rem 1.25rem; }
+    .why-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    .testimonials { grid-template-columns: 1fr; }
+    .contact-strip { padding: 3rem 1.25rem; }
+    .contact-strip-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .contact-strip h2 { font-size: 28px; }
+    .newsletter { padding: 3rem 1.25rem; }
+    .newsletter h2 { font-size: 28px; }
+    .newsletter-form { flex-direction: column; }
+    .newsletter-form input { border-right: 0.5px solid var(--mid); border-bottom: none; border-radius: var(--radius) var(--radius) 0 0; }
+    .newsletter-form button { border-radius: 0 0 var(--radius) var(--radius); padding: 14px; }
+    footer { padding: 3rem 1.25rem 2rem; }
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .footer-brand p { max-width: 100%; }
+    .footer-bottom { flex-direction: column; text-align: center; }
+    .cart-drawer { width: 100%; }
+  }
+  @media (min-width: 480px) and (max-width: 768px) {
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+    .why-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+  <a href="#products" onclick="filterProducts('all');closeMobileMenu()">All Products</a>
+  <a href="#products" onclick="filterProducts('residential');closeMobileMenu()">Residential</a>
+  <a href="#products" onclick="filterProducts('commercial');closeMobileMenu()">Commercial</a>
+  <a href="#products" onclick="filterProducts('structural');closeMobileMenu()">Structural</a>
+  <a href="#about" onclick="closeMobileMenu()">About</a>
+  <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    <a href="tel:0244072436"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.49 9.81 19.79 19.79 0 01.44 1.18 2 2 0 012.42 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>0244 072 436</a>
+    <a href="mailto:delrhema@gmail.com"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>delrhema@gmail.com</a>
+  </div>
+  <div class="top-bar-right">
+    <a href="https://www.facebook.com/profile.php?id=100075796880873" target="_blank"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>Facebook</a>
+    <div class="top-bar-divider"></div>
+    <a href="https://www.tiktok.com/@delrhema" target="_blank"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>TikTok</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo-wrap">
+    <img src="logo_circle.png" alt="DRCGHANA Logo" class="nav-logo-img">
+    <div class="nav-logo-text">DRCGHANA<span>Design Studio Store</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="#products" onclick="filterProducts('all')">All Products</a>
+    <a href="#products" onclick="filterProducts('residential')">Residential</a>
+    <a href="#products" onclick="filterProducts('commercial')">Commercial</a>
+    <a href="#products" onclick="filterProducts('structural')">Structural</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="openCart()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Cart <span class="cart-count" id="cartCount">0</span>
+    </button>
+    <button class="hamburger" onclick="openMobileMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Professional Design Products</p>
+    <h1>Where <em>Architecture</em><br>Meets Precision</h1>
+    <p>Premium architectural and structural design packages — ready-to-use drawings, templates, and construction documents crafted by certified professionals.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Browse Products</button>
+      <button class="btn-ghost" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Learn More</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div><div class="stat-num">350+</div><div class="stat-label">Design Packages</div></div>
+    <div><div class="stat-num">2,800</div><div class="stat-label">Happy Clients</div></div>
+    <div><div class="stat-num">15</div><div class="stat-label">Years Experience</div></div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section">
+  <div class="section-header"><div><p class="section-eyebrow">Shop by Category</p><h2 class="section-title">Explore Our<br><em>Design Collections</em></h2></div></div>
+  <div class="categories-grid">
+    <div class="cat-card" onclick="filterProducts('residential');document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600&q=80" alt="Residential">
+      <div class="cat-overlay"><div class="cat-tag">Category 01</div><div class="cat-name">Residential Designs</div><div class="cat-count">Houses · Apartments · Villas · Duplexes</div></div>
+    </div>
+    <div class="cat-card" onclick="filterProducts('commercial');document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80" alt="Commercial">
+      <div class="cat-overlay"><div class="cat-tag">Category 02</div><div class="cat-name">Commercial Designs</div><div class="cat-count">Offices · Retail · Hotels · Warehouses</div></div>
+    </div>
+    <div class="cat-card" onclick="filterProducts('structural');document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Structural">
+      <div class="cat-overlay"><div class="cat-tag">Category 03</div><div class="cat-name">Structural Drawings</div><div class="cat-count">Beams · Columns · Foundations · BOQ</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRODUCTS -->
+<section class="section" id="products">
+  <div class="section-header"><div><p class="section-eyebrow">Featured Products</p><h2 class="section-title">Ready-to-Use<br><em>Design Packages</em></h2></div><a href="#" class="view-all">View All →</a></div>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterProducts('all',this)">All</button>
+    <button class="filter-btn" onclick="filterProducts('residential',this)">Residential</button>
+    <button class="filter-btn" onclick="filterProducts('commercial',this)">Commercial</button>
+    <button class="filter-btn" onclick="filterProducts('structural',this)">Structural</button>
+    <button class="filter-btn" onclick="filterProducts('templates',this)">Templates</button>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- FEATURED BANNER -->
+<div class="featured-banner">
+  <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1600&q=80" alt="Featured">
+  <div class="featured-banner-content">
+    <p class="eyebrow">Limited Collection</p>
+    <h2>Complete 4-Bedroom<br><em>Villa Design Package</em></h2>
+    <button class="btn-primary" style="display:inline-block;width:auto;" onclick="addToCart({id:99,name:'4-Bedroom Villa Complete Package',price:1800,category:'residential',img:'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=120&q=60'})">Add to Cart — GH₵ 1,800</button>
+  </div>
+</div>
+
+<!-- WHY US -->
+<section class="why-strip" id="about">
+  <div class="section-header" style="margin-bottom:2.5rem;"><div><p class="section-eyebrow">Why Choose DRCGHANA</p><h2 class="section-title">Built for <em>Professionals</em></h2></div></div>
+  <div class="why-grid">
+    <div class="why-item"><div class="why-icon">⬡</div><div class="why-title">CAD-Ready Files</div><div class="why-desc">All drawings delivered in AutoCAD .dwg and PDF formats, editable and ready to use immediately.</div></div>
+    <div class="why-item"><div class="why-icon">◈</div><div class="why-title">Certified Designs</div><div class="why-desc">Every package is prepared by licensed architects and structural engineers with local building code compliance.</div></div>
+    <div class="why-item"><div class="why-icon">◉</div><div class="why-title">Instant Download</div><div class="why-desc">Receive your complete design package instantly after purchase. No waiting, no delays.</div></div>
+    <div class="why-item"><div class="why-icon">◫</div><div class="why-title">Customisation Support</div><div class="why-desc">Need modifications? Our team provides affordable customisation services on any purchased design.</div></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <div class="section-header"><div><p class="section-eyebrow">Client Reviews</p><h2 class="section-title">What Our<br><em>Clients Say</em></h2></div></div>
+  <div class="testimonials">
+    <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-text">"The 3-bedroom bungalow package saved me weeks of work. The drawings were clean, detailed, and the contractor understood everything immediately."</p><div class="testi-author"><strong>Kwame Asante</strong>Contractor, Accra</div></div>
+    <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-text">"I purchased the commercial plaza package for a client project. The structural calculations included were exactly what the local authority required for permit approval."</p><div class="testi-author"><strong>Abena Mensah</strong>Civil Engineer, Kumasi</div></div>
+    <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-text">"Excellent value. The BOQ template alone was worth the purchase. I've used it on three projects already. Will definitely buy again."</p><div class="testi-author"><strong>Emmanuel Osei</strong>Quantity Surveyor, Takoradi</div></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-strip" id="contact">
+  <div class="contact-strip-inner">
+    <div><p class="section-eyebrow" style="margin-bottom:1rem;">Get In Touch</p><h2>Reach Us <em>Anytime</em></h2><p style="margin-top:0.75rem;">Have questions about a design package or need a custom solution? Reach out through any channel below.</p></div>
+    <div class="contact-items">
+      <a href="tel:0244072436" class="contact-item"><div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.49 9.81 19.79 19.79 0 01.44 1.18 2 2 0 012.42 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div><div><div class="contact-label">Phone / WhatsApp</div><div class="contact-value">0244 072 436</div></div></a>
+      <a href="mailto:delrhema@gmail.com" class="contact-item"><div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="contact-label">Email</div><div class="contact-value">delrhema@gmail.com</div></div></a>
+      <a href="https://www.facebook.com/profile.php?id=100075796880873" target="_blank" class="contact-item"><div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></div><div><div class="contact-label">Facebook</div><div class="contact-value">DRCGHANA on Facebook</div></div></a>
+      <a href="https://www.tiktok.com/@delrhema" target="_blank" class="contact-item"><div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg></div><div><div class="contact-label">TikTok</div><div class="contact-value">@delrhema</div></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<div class="newsletter">
+  <h2>Stay <em style="font-style:italic;color:var(--gold-light)">Updated</em></h2>
+  <p>Get notified when new design packages drop. No spam, just new releases.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="Your email address" id="emailInput">
+    <button onclick="subscribeNewsletter()">Subscribe</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo-wrap"><img src="logo_circle.png" alt="DRCGHANA Logo" class="footer-logo-img"><div class="logo">DRCGHANA</div></div>
+      <p>Premium architectural and structural design products for professionals across Ghana and West Africa.</p>
+      <div class="footer-social">
+        <a href="https://www.facebook.com/profile.php?id=100075796880873" target="_blank" class="social-btn facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+        <a href="https://www.tiktok.com/@delrhema" target="_blank" class="social-btn tiktok"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg></a>
+        <a href="mailto:delrhema@gmail.com" class="social-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+        <a href="tel:0244072436" class="social-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.49 9.81 19.79 19.79 0 01.44 1.18 2 2 0 012.42 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></a>
+      </div>
+    </div>
+    <div class="footer-col"><h4>Products</h4><a href="#">Residential Designs</a><a href="#">Commercial Designs</a><a href="#">Structural Drawings</a><a href="#">BOQ Templates</a><a href="#">New Arrivals</a></div>
+    <div class="footer-col"><h4>Support</h4><a href="#">How It Works</a><a href="#">Customisation</a><a href="#">License Terms</a><a href="#">Refund Policy</a><a href="#">FAQ</a></div>
+    <div class="footer-col"><h4>Contact</h4><a href="tel:0244072436">0244 072 436</a><a href="mailto:delrhema@gmail.com">delrhema@gmail.com</a><a href="https://www.facebook.com/profile.php?id=100075796880873" target="_blank">Facebook Page</a><a href="https://www.tiktok.com/@delrhema" target="_blank">@delrhema</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2025 DRCGHANA Design Studio. All rights reserved.</p><p>Designed & built with precision.</p></div>
+</footer>
+
+<!-- CART -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header"><h3>Your Cart</h3><button class="close-cart" onclick="closeCart()">✕</button></div>
+  <div class="cart-items" id="cartItems"><div class="cart-empty"><div class="icon">🛒</div><p>Your cart is empty</p></div></div>
+  <div class="cart-footer" id="cartFooter" style="display:none;">
+    <div class="cart-total"><span class="label">Total</span><span class="amount" id="cartTotal">GH₵ 0</span></div>
+    <button class="checkout-btn">Proceed to Checkout →</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const products=[{id:1,name:'3-Bedroom Bungalow Package',category:'residential',price:650,badge:'Popular',img:'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&q=70',desc:'Complete architectural drawings with floor plans, elevations, sections & site plan.'},{id:2,name:'5-Bedroom Executive House',category:'residential',price:1200,badge:'',img:'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=70',desc:'Full design package including interior layouts and structural detail drawings.'},{id:3,name:'Office Complex Design',category:'commercial',price:2400,badge:'New',img:'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=70',desc:'3-storey office building with parking, fire exits and MEP schematics.'},{id:4,name:'Retail Shopfront Design',category:'commercial',price:480,badge:'',img:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=70',desc:'Commercial shopfront design package with signage zones and internal layout.'},{id:5,name:'Foundation Structural Set',category:'structural',price:320,badge:'',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70',desc:'Strip, raft and pad foundation drawings with engineering calculations.'},{id:6,name:'RC Frame Structural Package',category:'structural',price:750,badge:'Popular',img:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70',desc:'Reinforced concrete columns, beams and slab schedule for 3-storey building.'},{id:7,name:'BOQ Excel Master Template',category:'templates',price:180,badge:'Best Seller',img:'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400&q=70',desc:'Professional Bill of Quantities spreadsheet with auto-pricing and trade sections.'},{id:8,name:'2-Bedroom Apartment Block',category:'residential',price:880,badge:'New',img:'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=70',desc:'4-unit apartment block design with parking, staircase and utility rooms.'},{id:9,name:'Warehouse / Store Design',category:'commercial',price:950,badge:'',img:'https://images.unsplash.com/photo-1553413077-190dd305871c?w=400&q=70',desc:'Steel portal frame warehouse with drainage layout, loading bay and offices.'},{id:10,name:'Steel Connection Details',category:'structural',price:250,badge:'',img:'https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?w=400&q=70',desc:'Detailed steel beam-to-column connection library — 25 standard connection types.'},{id:11,name:'Site Planning Template',category:'templates',price:140,badge:'',img:'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&q=70',desc:'Reusable AutoCAD site plan template with roads, setbacks and plot boundaries.'},{id:12,name:'4-Bedroom Townhouse',category:'residential',price:980,badge:'Popular',img:'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&q=70',desc:'Modern townhouse design with rooftop terrace, double garage and full section drawings.'}];
+let cart=[];
+function renderProducts(f){const g=document.getElementById('productsGrid');const p=f==='all'?products:products.filter(x=>x.category===f);g.innerHTML=p.map(p=>`<div class="product-card"><div class="product-img"><img src="${p.img}" alt="${p.name}" loading="lazy">${p.badge?`<div class="product-badge ${p.badge==='New'?'new':''}">${p.badge}</div>`:''}</div><div class="product-body"><div class="product-category">${p.category}</div><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div><div class="product-footer"><div class="product-price"><span class="currency">GH₵</span>${p.price.toLocaleString()}</div><button class="add-to-cart" onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button></div></div></div>`).join('');}
+function filterProducts(c,b){renderProducts(c);document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');}
+function addToCart(p){if(cart.find(i=>i.id===p.id)){showToast('Already in cart');return;}cart.push(p);updateCartUI();showToast('✓ "'+p.name+'" added to cart');}
+function removeFromCart(id){cart=cart.filter(i=>i.id!==id);updateCartUI();}
+function updateCartUI(){document.getElementById('cartCount').textContent=cart.length;const t=cart.reduce((s,i)=>s+i.price,0);document.getElementById('cartTotal').textContent='GH₵ '+t.toLocaleString();const ie=document.getElementById('cartItems');const fe=document.getElementById('cartFooter');if(cart.length===0){ie.innerHTML='<div class="cart-empty"><div class="icon">🛒</div><p>Your cart is empty</p></div>';fe.style.display='none';}else{fe.style.display='block';ie.innerHTML=cart.map(i=>`<div class="cart-item"><img src="${i.img}" alt="${i.name}"><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-price">GH₵ ${i.price.toLocaleString()}</div></div><button class="cart-item-remove" onclick="removeFromCart(${i.id})">✕</button></div>`).join('');}}
+function openCart(){document.getElementById('cartOverlay').classList.add('open');document.getElementById('cartDrawer').classList.add('open');}
+function closeCart(){document.getElementById('cartOverlay').classList.remove('open');document.getElementById('cartDrawer').classList.remove('open');}
+function openMobileMenu(){document.getElementById('mobileMenu').classList.add('open');}
+function closeMobileMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function subscribeNewsletter(){const e=document.getElementById('emailInput').value.trim();if(!e||!e.includes('@')){showToast('Please enter a valid email');return;}showToast('✓ Subscribed! Welcome to DRCGHANA.');document.getElementById('emailInput').value='';}
+renderProducts('all');
+</script>
+</body>
+</html>

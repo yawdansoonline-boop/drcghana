@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Downloads — DRCGHANA</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A030; --gold-light: #E8C96A;
+    --green: #1B6B35; --green-light: #2A8A4A;
+    --dark: #0A0E0B; --dark-2: #121710; --dark-3: #181E14; --dark-4: #222B1C;
+    --mid: #344028; --text-dim: #7A8A74; --text-mid: #A8B89E;
+    --text-light: #E0ECD8; --white: #F2F7EE; --radius: 2px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--dark); color: var(--text-light); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+  .container { max-width: 680px; width: 100%; }
+
+  /* SUCCESS HEADER */
+  .success-header { text-align: center; margin-bottom: 3rem; }
+  .success-icon {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(27,107,53,0.2); border: 2px solid var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem; font-size: 36px;
+  }
+  .success-eyebrow { font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--green-light); margin-bottom: 0.75rem; }
+  .success-title { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--white); line-height: 1.1; margin-bottom: 0.75rem; }
+  .success-title em { font-style: italic; color: var(--gold-light); }
+  .success-sub { font-size: 14px; color: var(--text-dim); line-height: 1.7; }
+
+  /* REF BOX */
+  .ref-box { background: var(--dark-2); border: 0.5px solid var(--dark-4); padding: 1rem 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; }
+  .ref-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); }
+  .ref-value { font-size: 13px; color: var(--gold); font-weight: 500; }
+
+  /* DOWNLOADS */
+  .downloads-label { font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--green-light); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 10px; }
+  .downloads-label::after { content: ''; flex: 1; height: 0.5px; background: rgba(201,160,48,0.3); }
+  .download-card { background: var(--dark-2); border: 0.5px solid var(--dark-4); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; transition: border-color 0.3s; }
+  .download-card:hover { border-color: rgba(27,107,53,0.5); }
+  .download-info { flex: 1; }
+  .download-icon { font-size: 28px; color: var(--green-light); margin-bottom: 0.5rem; }
+  .download-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--white); margin-bottom: 4px; }
+  .download-desc { font-size: 12px; color: var(--text-dim); }
+  .download-btn { padding: 10px 24px; background: var(--green); color: var(--white); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; border-radius: var(--radius); text-decoration: none; white-space: nowrap; transition: background 0.2s; border: none; cursor: pointer; display: inline-block; }
+  .download-btn:hover { background: var(--green-light); }
+
+  /* NOTE BOX */
+  .note-box { background: rgba(201,160,48,0.07); border: 0.5px solid rgba(201,160,48,0.3); padding: 1.25rem 1.5rem; border-radius: var(--radius); margin-top: 2rem; font-size: 13px; color: var(--text-mid); line-height: 1.7; }
+  .note-box strong { color: var(--gold); }
+
+  /* BACK LINK */
+  .back-link { text-align: center; margin-top: 2rem; }
+  .back-link a { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); border-bottom: 0.5px solid var(--mid); padding-bottom: 2px; transition: color 0.2s; }
+  .back-link a:hover { color: var(--gold); }
+
+  /* LOGO */
+  .logo-bar { text-align: center; margin-bottom: 3rem; }
+  .logo-bar a { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; }
+  .logo-bar p { font-size: 11px; color: var(--text-dim); letter-spacing: 0.3em; text-transform: uppercase; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- LOGO -->
+  <div class="logo-bar">
+    <a href="index.html">DRCGHANA</a>
+    <p>Architectural & Structural Design Studio</p>
+  </div>
+
+  <!-- SUCCESS HEADER -->
+  <div class="success-header">
+    <div class="success-icon">✓</div>
+    <p class="success-eyebrow">Payment Confirmed</p>
+    <h1 class="success-title">Thank You for Your<br><em>Purchase!</em></h1>
+    <p class="success-sub">Your payment was successful. Your design packages are ready to download below.<br>A receipt has been sent to your email address.</p>
+  </div>
+
+  <!-- REF BOX -->
+  <div class="ref-box">
+    <span class="ref-label">Transaction Reference</span>
+    <span class="ref-value" id="refDisplay">Loading...</span>
+  </div>
+
+  <!-- DOWNLOADS -->
+  <div class="downloads-label">Your Downloads</div>
+  <div id="downloadsList"></div>
+
+  <!-- NOTE -->
+  <div class="note-box">
+    <strong>Important:</strong> Please save your download links before closing this page. If you have any issues downloading your files, contact us at <strong>delrhema@gmail.com</strong> or WhatsApp <strong>0244 072 436</strong> with your transaction reference and we will assist you immediately.
+  </div>
+
+  <!-- BACK -->
+  <div class="back-link">
+    <a href="index.html">← Back to Store</a>
+  </div>
+
+</div>
+
+<script>
+// Product download links — UPDATE THESE with your real Google Drive links
+const downloadLinks = {
+  '3D 3-Bedroom House': {
+    url: 'https://drive.google.com/uc?export=download&id=1LMVLAP1frg5IorLHUeFoTtFp8ymVIrEl',
+    desc: 'Premium 3D rendered image — high resolution JPEG for presentations'
+  },
+  '5-Bedroom Executive House': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: 'Full design package with interior layouts & structural drawings'
+  },
+  'Office Complex Design': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: '3-storey office with parking, fire exits & MEP schematics'
+  },
+  'Retail Shopfront Design': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: 'Commercial shopfront with signage zones & internal layout'
+  },
+  'Foundation Structural Set': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: 'Strip, raft and pad foundation drawings with calculations'
+  },
+  'RC Frame Structural Package': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: 'Columns, beams and slab schedule for 3-storey building'
+  },
+  'BOQ Excel Master Template': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: 'Auto-pricing Bill of Quantities with all trade sections'
+  },
+  '2-Bedroom Apartment Block': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: '4-unit apartment block with parking & staircase'
+  },
+  'Warehouse / Store Design': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: 'Steel portal frame warehouse with drainage & loading bay'
+  },
+  'Steel Connection Details': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: '25 standard steel beam-to-column connection types'
+  },
+  'Site Planning Template': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: 'AutoCAD site plan template with roads & plot boundaries'
+  },
+  '4-Bedroom Townhouse': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: 'Modern townhouse with rooftop terrace & double garage'
+  },
+  '4-Bedroom Villa Complete Package': {
+    url: 'YOUR_GOOGLE_DRIVE_LINK_HERE',
+    desc: 'Complete villa design with all drawings & specifications'
+  }
+};
+
+// Parse URL params
+const params = new URLSearchParams(window.location.search);
+const ref = params.get('ref') || 'N/A';
+const items = params.get('items') ? decodeURIComponent(params.get('items')).split('|') : [];
+
+// Show reference
+document.getElementById('refDisplay').textContent = ref;
+
+// Build downloads list
+const list = document.getElementById('downloadsList');
+if(items.length === 0) {
+  list.innerHTML = '<p style="color:var(--text-dim);font-size:14px;">No items found. Please contact support with your reference number.</p>';
+} else {
+  items.forEach(itemName => {
+    const product = downloadLinks[itemName.trim()];
+    const url = product ? product.url : '#';
+    const desc = product ? product.desc : 'Contact us for your download link';
+    const isReady = url !== 'YOUR_GOOGLE_DRIVE_LINK_HERE' && url !== '#';
+
+    list.innerHTML += `
+      <div class="download-card">
+        <div class="download-info">
+          <div class="download-icon">📐</div>
+          <div class="download-name">${itemName.trim()}</div>
+          <div class="download-desc">${desc}</div>
+        </div>
+        ${isReady
+          ? `<a href="${url}" target="_blank" class="download-btn">Download →</a>`
+          : `<a href="mailto:delrhema@gmail.com?subject=Download Request - ${encodeURIComponent(itemName)}&body=Transaction Reference: ${ref}" class="download-btn" style="background:var(--gold);color:var(--dark);">Request File →</a>`
+        }
+      </div>`;
+  });
+}
+</script>
+</body>
+</html>

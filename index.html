@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DRCGHANA — Architectural & Structural Design Store</title>
-<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="https://js.paystack.co/v1/inline.js" async="false"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -488,6 +488,48 @@ function closeMobileMenu(){document.getElementById('mobileMenu').classList.remov
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 function subscribeNewsletter(){const e=document.getElementById('emailInput').value.trim();if(!e||!e.includes('@')){showToast('Please enter a valid email');return;}showToast('✓ Subscribed! Welcome to DRCGHANA.');document.getElementById('emailInput').value='';}
 renderProducts('all');
+
+function initiatePayment() {
+  const email = document.getElementById('customerEmail').value.trim();
+  if(!email || !email.includes('@')) {
+    showToast('Please enter your email address first');
+    document.getElementById('customerEmail').focus();
+    return;
+  }
+  if(cart.length === 0) { showToast('Your cart is empty'); return; }
+
+  const total = cart.reduce((s,i) => s + i.price, 0);
+  const cartSummary = cart.map(i => i.name).join('|');
+  const ref = 'DRCGHANA_' + Math.floor(Math.random() * 1000000000 + 1);
+
+  // Save cart to sessionStorage so download page can access it
+  sessionStorage.setItem('drc_cart', cartSummary);
+  sessionStorage.setItem('drc_email', email);
+  sessionStorage.setItem('drc_ref', ref);
+
+  const handler = PaystackPop.setup({
+    key: 'pk_live_6b7bfe4e7f8d152c1cac558ddb2012ebc73fa63d',
+    email: email,
+    amount: total * 100,
+    currency: 'GHS',
+    ref: ref,
+    currency: 'GHS',
+    channels: ['card', 'mobile_money', 'ussd', 'bank'],
+    metadata: {
+      custom_fields: [
+        { display_name: 'Products', variable_name: 'products', value: cartSummary },
+        { display_name: 'Customer Email', variable_name: 'customer_email', value: email }
+      ]
+    },
+    callback: function(response) {
+      window.location.href = 'download.html?ref=' + response.reference + '&email=' + encodeURIComponent(email) + '&items=' + encodeURIComponent(cartSummary);
+    },
+    onClose: function() {
+      showToast('Payment window closed. Your cart is still saved.');
+    }
+  });
+  handler.openIframe();
+}
 </script>
 </body>
 </html>

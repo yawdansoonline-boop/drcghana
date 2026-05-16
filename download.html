@@ -158,10 +158,16 @@ const downloadLinks = {
   }
 };
 
-// Parse URL params
+// Parse URL params — also check sessionStorage as fallback
 const params = new URLSearchParams(window.location.search);
-const ref = params.get('ref') || 'N/A';
-const items = params.get('items') ? decodeURIComponent(params.get('items')).split('|') : [];
+const ref = params.get('ref') || sessionStorage.getItem('drc_ref') || 'N/A';
+const itemsParam = params.get('items') || sessionStorage.getItem('drc_cart') || '';
+const items = itemsParam ? decodeURIComponent(itemsParam).split('|') : [];
+
+// Clear sessionStorage
+sessionStorage.removeItem('drc_cart');
+sessionStorage.removeItem('drc_email');
+sessionStorage.removeItem('drc_ref');
 
 // Show reference
 document.getElementById('refDisplay').textContent = ref;

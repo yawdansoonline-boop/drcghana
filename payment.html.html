@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DRC Ghana – Payment Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:    #C8922A;
+      --gold-lt: #F0C060;
+      --green:   #1A5C38;
+      --red:     #9B1B1B;
+      --ink:     #1A1A1A;
+      --mist:    #F7F4EF;
+      --white:   #FFFFFF;
+      --radius:  14px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--mist);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TOP BANNER ── */
+    .banner {
+      background: var(--green);
+      color: var(--gold-lt);
+      text-align: center;
+      font-size: .78rem;
+      letter-spacing: .08em;
+      padding: 7px 16px;
+      font-weight: 500;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--white);
+      border-bottom: 3px solid var(--gold);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-mark {
+      width: 52px; height: 52px;
+      background: var(--green);
+      border-radius: 50%;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+    .logo-mark svg { width: 28px; height: 28px; }
+
+    .brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      color: var(--green);
+      line-height: 1.1;
+    }
+    .brand p {
+      font-size: .75rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    nav {
+      margin-left: auto;
+      display: flex; gap: 8px;
+    }
+    nav a {
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 500;
+      color: var(--ink);
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: background .2s;
+    }
+    nav a:hover { background: #eee; }
+    nav a.active {
+      background: var(--green);
+      color: var(--white);
+    }
+
+    /* ── HERO STRIP ── */
+    .hero {
+      background: linear-gradient(135deg, var(--green) 0%, #0d3b22 100%);
+      color: var(--white);
+      padding: 52px 32px 44px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(200,146,42,.18) 0%, transparent 70%);
+    }
+    .hero h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.3rem;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .hero p {
+      max-width: 520px;
+      margin: 0 auto;
+      font-size: .95rem;
+      color: rgba(255,255,255,.8);
+      line-height: 1.7;
+      position: relative;
+    }
+    .hero .kente {
+      display: flex; justify-content: center; gap: 4px;
+      margin-top: 20px; position: relative;
+    }
+    .hero .kente span {
+      display: block; height: 5px; border-radius: 2px;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      flex: 1;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── INFO PANEL ── */
+    .info-panel {}
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+    .section-sub {
+      font-size: .85rem;
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .service-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid #e5e0d8;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      display: flex; align-items: flex-start; gap: 14px;
+      cursor: pointer;
+      transition: box-shadow .2s, border-color .2s;
+    }
+    .service-card:hover, .service-card.selected {
+      box-shadow: 0 4px 18px rgba(26,92,56,.12);
+      border-color: var(--gold);
+    }
+    .service-card.selected { background: #fdfaf4; }
+
+    .service-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--green);
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+    .service-icon svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 1.8; }
+
+    .service-info h3 { font-size: .95rem; font-weight: 600; margin-bottom: 3px; }
+    .service-info p  { font-size: .8rem; color: #888; line-height: 1.5; }
+
+    .radio-dot {
+      margin-left: auto; align-self: center;
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid #ccc; flex-shrink: 0;
+      display: grid; place-items: center;
+      transition: border-color .2s;
+    }
+    .service-card.selected .radio-dot {
+      border-color: var(--gold);
+    }
+    .service-card.selected .radio-dot::after {
+      content: '';
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--gold);
+    }
+
+    /* ── PAYMENT FORM ── */
+    .payment-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid #e5e0d8;
+      padding: 28px 24px;
+      position: sticky; top: 20px;
+    }
+    .payment-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; color: var(--ink);
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #ede8e0;
+    }
+
+    .form-group { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    input, select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 9px;
+      font-size: .92rem;
+      font-family: inherit;
+      color: var(--ink);
+      background: #fcfcfc;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(26,92,56,.08);
+    }
+
+    .amount-presets {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      margin-bottom: 10px;
+    }
+    .preset-btn {
+      background: #f3f0ea;
+      border: 1.5px solid transparent;
+      border-radius: 8px;
+      padding: 9px 6px;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: inherit;
+    }
+    .preset-btn:hover, .preset-btn.active {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .currency-wrap {
+      position: relative;
+    }
+    .currency-wrap span {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%);
+      font-weight: 600; color: var(--green);
+      font-size: .9rem;
+    }
+    .currency-wrap input { padding-left: 38px; }
+
+    .summary-box {
+      background: #f7f4ef;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      font-size: .85rem;
+    }
+    .summary-row {
+      display: flex; justify-content: space-between;
+      padding: 4px 0;
+      color: #666;
+    }
+    .summary-row.total {
+      font-weight: 700; font-size: .95rem;
+      color: var(--ink);
+      border-top: 1px solid #ddd; margin-top: 6px; padding-top: 8px;
+    }
+
+    .pay-btn {
+      width: 100%;
+      padding: 15px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 11px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      letter-spacing: .02em;
+      transition: background .2s, transform .15s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .pay-btn:hover { background: #0d3b22; transform: translateY(-1px); }
+    .pay-btn:active { transform: translateY(0); }
+    .pay-btn svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2; }
+
+    .secure-note {
+      text-align: center;
+      font-size: .75rem;
+      color: #aaa;
+      margin-top: 12px;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .secure-note svg { width: 13px; height: 13px; fill: #aaa; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      color: rgba(255,255,255,.55);
+      text-align: center;
+      font-size: .78rem;
+      padding: 20px 16px;
+    }
+    footer span { color: var(--gold); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.55);
+      z-index: 999;
+      place-items: center;
+    }
+    .modal-overlay.open { display: grid; }
+    .modal {
+      background: #fff;
+      border-radius: 18px;
+      padding: 40px 32px;
+      max-width: 380px; width: 90%;
+      text-align: center;
+      animation: pop .3s ease;
+    }
+    @keyframes pop {
+      from { transform: scale(.88); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .modal .icon { font-size: 3rem; margin-bottom: 12px; }
+    .modal h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--green); margin-bottom: 8px; }
+    .modal p  { font-size: .9rem; color: #666; line-height: 1.7; }
+    .modal-ref { font-size: .8rem; background: #f3f0ea; padding: 8px 14px; border-radius: 8px; margin-top: 14px; font-family: monospace; color: var(--ink); }
+    .modal-close {
+      margin-top: 22px; padding: 12px 30px;
+      background: var(--green); color: #fff;
+      border: none; border-radius: 9px;
+      font-size: .95rem; font-family: inherit;
+      font-weight: 600; cursor: pointer;
+    }
+
+    /* ── SERVICES STRIP ── */
+    .services-strip {
+      background: var(--white);
+      border-bottom: 1px solid #e8e3da;
+      padding: 28px 32px;
+    }
+    .services-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .services-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: var(--green);
+      text-align: center;
+    }
+    .services-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f0faf4;
+      border: 1.5px solid #b8dfc8;
+      border-radius: 40px;
+      padding: 10px 20px;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--green);
+    }
+    .badge .check {
+      background: var(--green);
+      color: #fff;
+      border-radius: 50%;
+      width: 20px; height: 20px;
+      display: grid; place-items: center;
+      font-size: .7rem;
+      flex-shrink: 0;
+    }
+    .cta-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 26px;
+      border-radius: 10px;
+      font-size: .92rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      border: 2px solid transparent;
+      transition: all .2s;
+    }
+    .cta-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .cta-btn.call {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+    .cta-btn.call:hover { background: #0d3b22; border-color: #0d3b22; }
+    .cta-btn.whatsapp {
+      background: #25D366;
+      color: #fff;
+      border-color: #25D366;
+    }
+    .cta-btn.whatsapp:hover { background: #1da851; border-color: #1da851; }
+    .cta-btn.quote {
+      background: var(--white);
+      color: var(--green);
+      border-color: var(--green);
+    }
+    .cta-btn.quote:hover { background: var(--green); color: #fff; }
+
+    @media (max-width: 700px) {
+      main { grid-template-columns: 1fr; }
+      .payment-card { position: static; }
+      header { padding: 14px 16px; }
+      nav { display: none; }
+      .services-strip { padding: 22px 16px; }
+      .badge { font-size: .82rem; padding: 8px 14px; }
+      .cta-btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="banner">🇬🇭 &nbsp; Serving Ghana with Excellence — Secure Payments via Paystack</div>
+
+<header>
+  <div class="logo-mark">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="12" stroke="#C8922A" stroke-width="2"/>
+      <path d="M8 14h12M14 8v12" stroke="#F0C060" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="brand">
+    <h1>DRC Ghana</h1>
+    <p>Payment Portal</p>
+  </div>
+  <nav>
+    <a href="#" class="active">Pay Now</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <h2>Make a Secure Payment</h2>
+  <p>Select a service below, enter your details, and complete your payment safely through our Paystack-powered gateway.</p>
+  <div class="kente">
+    <span style="width:40px; background:#C8922A;"></span>
+    <span style="width:40px; background:#fff;"></span>
+    <span style="width:40px; background:#1A5C38;"></span>
+    <span style="width:40px; background:#9B1B1B;"></span>
+    <span style="width:40px; background:#F0C060;"></span>
+    <span style="width:40px; background:#1A5C38;"></span>
+    <span style="width:40px; background:#fff;"></span>
+    <span style="width:40px; background:#C8922A;"></span>
+  </div>
+</div>
+
+<!-- ── SERVICES STRIP ── -->
+<section class="services-strip">
+  <div class="services-inner">
+    <h2 class="services-title">What We Offer</h2>
+    <div class="services-badges">
+      <div class="badge"><span class="check">✓</span> Free Consultation</div>
+      <div class="badge"><span class="check">✓</span> Site Supervision</div>
+      <div class="badge"><span class="check">✓</span> Building Design</div>
+      <div class="badge"><span class="check">✓</span> Construction Execution</div>
+    </div>
+    <div class="cta-buttons">
+      <a href="tel:+233000000000" class="cta-btn call">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.13 1 .37 1.97.72 2.91a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.06-.96a2 2 0 0 1 2.11-.45c.94.35 1.91.59 2.91.72a2 2 0 0 1 1.72 2.02z"/>
+        </svg>
+        Call Now
+      </a>
+      <a href="https://wa.me/233000000000?text=Hello%20DRC%20Ghana%2C%20I%20would%20like%20more%20information." target="_blank" class="cta-btn whatsapp">
+        <svg fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.118 1.528 5.845L.057 23.428a.75.75 0 0 0 .916.914l5.63-1.47A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.73 9.73 0 0 1-4.964-1.361l-.356-.212-3.684.963.982-3.594-.232-.37A9.72 9.72 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/>
+        </svg>
+        WhatsApp Us
+      </a>
+      <a href="mailto:info@drcghana.com?subject=Quotation%20Request&body=Hello%2C%20I%20would%20like%20to%20request%20a%20quotation%20for..." class="cta-btn quote">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        Request Quotation
+      </a>
+    </div>
+  </div>
+</section>
+
+<main>
+  <!-- Left: Service selection -->
+  <div class="info-panel">
+    <h2 class="section-title">Select a Service</h2>
+    <p class="section-sub">Choose the service you wish to pay for. All transactions are encrypted and processed securely.</p>
+
+    <div class="service-card selected" onclick="selectService(this, 'Registration Fee')">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="service-info">
+        <h3>Registration Fee</h3>
+        <p>Membership or programme registration fee payment.</p>
+      </div>
+      <div class="radio-dot"></div>
+    </div>
+
+    <div class="service-card" onclick="selectService(this, 'Training & Seminar')">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div class="service-info">
+        <h3>Training &amp; Seminar</h3>
+        <p>Payment for workshops, training sessions or seminars.</p>
+      </div>
+      <div class="radio-dot"></div>
+    </div>
+
+    <div class="service-card" onclick="selectService(this, 'Consultation Fee')">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="service-info">
+        <h3>Consultation Fee</h3>
+        <p>Professional advisory or consultation service payment.</p>
+      </div>
+      <div class="radio-dot"></div>
+    </div>
+
+    <div class="service-card" onclick="selectService(this, 'Donation')">
+      <div class="service-icon" style="background:var(--red);">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <div class="service-info">
+        <h3>Donation</h3>
+        <p>Support our mission with a voluntary contribution.</p>
+      </div>
+      <div class="radio-dot"></div>
+    </div>
+
+    <div class="service-card" onclick="selectService(this, 'Other Payment')">
+      <div class="service-icon" style="background:var(--gold);">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+      <div class="service-info">
+        <h3>Other Payment</h3>
+        <p>Any other payment not listed above.</p>
+      </div>
+      <div class="radio-dot"></div>
+    </div>
+  </div>
+
+  <!-- Right: Payment form -->
+  <div class="payment-card">
+    <h3>💳 &nbsp;Payment Details</h3>
+
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="fullName" placeholder="e.g. Kwame Asante" />
+    </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" />
+    </div>
+
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" id="phone" placeholder="+233 XX XXX XXXX" />
+    </div>
+
+    <div class="form-group">
+      <label>Service</label>
+      <input type="text" id="serviceField" value="Registration Fee" readonly
+             style="background:#f3f0ea; color:var(--green); font-weight:600;" />
+    </div>
+
+    <div class="form-group">
+      <label>Amount (GHS)</label>
+      <div class="amount-presets">
+        <button class="preset-btn" onclick="setAmount(50)">GHS 50</button>
+        <button class="preset-btn" onclick="setAmount(100)">GHS 100</button>
+        <button class="preset-btn" onclick="setAmount(200)">GHS 200</button>
+        <button class="preset-btn" onclick="setAmount(500)">GHS 500</button>
+        <button class="preset-btn" onclick="setAmount(1000)">GHS 1,000</button>
+        <button class="preset-btn" onclick="setAmount(null)">Custom</button>
+      </div>
+      <div class="currency-wrap">
+        <span>GHS</span>
+        <input type="number" id="amount" placeholder="0.00" min="1" step="0.01" oninput="updateSummary()" />
+      </div>
+    </div>
+
+    <div class="summary-box">
+      <div class="summary-row">
+        <span>Service</span>
+        <span id="sumService">Registration Fee</span>
+      </div>
+      <div class="summary-row">
+        <span>Amount</span>
+        <span id="sumAmount">GHS 0.00</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span id="sumTotal">GHS 0.00</span>
+      </div>
+    </div>
+
+    <button class="pay-btn" onclick="initiatePayment()">
+      <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+      Pay with Paystack
+    </button>
+
+    <div class="secure-note">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      256-bit SSL · PCI DSS Compliant · Paystack Secured
+    </div>
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 <span>DRC Ghana</span>. All rights reserved. &nbsp;|&nbsp; Powered by <span>Paystack</span>
+</footer>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="icon">✅</div>
+    <h2>Payment Successful!</h2>
+    <p>Thank you for your payment. A confirmation has been sent to your email address.</p>
+    <div class="modal-ref" id="refCode">Ref: ...</div>
+    <button class="modal-close" onclick="closeModal()">Done</button>
+  </div>
+</div>
+
+<script>
+  // ── State
+  let selectedService = 'Registration Fee';
+
+  // ── Service selection
+  function selectService(el, name) {
+    document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedService = name;
+    document.getElementById('serviceField').value = name;
+    document.getElementById('sumService').textContent = name;
+  }
+
+  // ── Amount presets
+  function setAmount(val) {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    if (val !== null) {
+      event.target.classList.add('active');
+      document.getElementById('amount').value = val;
+    } else {
+      document.getElementById('amount').value = '';
+      document.getElementById('amount').focus();
+    }
+    updateSummary();
+  }
+
+  // ── Summary update
+  function updateSummary() {
+    const amt = parseFloat(document.getElementById('amount').value) || 0;
+    const fmt = n => 'GHS ' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    document.getElementById('sumAmount').textContent = fmt(amt);
+    document.getElementById('sumTotal').textContent  = fmt(amt);
+  }
+
+  // ── Paystack payment
+  function initiatePayment() {
+    const name  = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const amt   = parseFloat(document.getElementById('amount').value);
+
+    if (!name)  { alert('Please enter your full name.'); return; }
+    if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
+    if (!amt || amt <= 0) { alert('Please enter a valid amount.'); return; }
+
+    const handler = PaystackPop.setup({
+      key: 'pk_live_6b7bfe4e7f8d152c1cac558ddb2012ebc73fa63d',
+      email: email,
+      amount: Math.round(amt * 100),   // convert to pesewas
+      currency: 'GHS',
+      ref: 'DRC-' + Date.now(),
+      metadata: {
+        custom_fields: [
+          { display_name: 'Full Name',    variable_name: 'full_name',    value: name },
+          { display_name: 'Phone Number', variable_name: 'phone_number', value: phone },
+          { display_name: 'Service',      variable_name: 'service',      value: selectedService }
+        ]
+      },
+      callback: function(response) {
+        document.getElementById('refCode').textContent = 'Ref: ' + response.reference;
+        document.getElementById('successModal').classList.add('open');
+      },
+      onClose: function() {
+        // user closed payment modal — do nothing
+      }
+    });
+
+    handler.openIframe();
+  }
+
+  // ── Close modal
+  function closeModal() {
+    document.getElementById('successModal').classList.remove('open');
+    document.getElementById('amount').value = '';
+    document.getElementById('fullName').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('phone').value = '';
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    updateSummary();
+  }
+</script>
+</body>
+</html>

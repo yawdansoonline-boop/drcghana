@@ -158,36 +158,58 @@ const downloadLinks = {
   }
 };
 
-// Parse URL params — also check sessionStorage as fallback
+// Only the reference is trusted from the URL — everything else must be
+// confirmed by asking Paystack directly, via our serverless function.
 const params = new URLSearchParams(window.location.search);
-const ref = params.get('ref') || sessionStorage.getItem('drc_ref') || 'N/A';
-const itemsParam = params.get('items') || sessionStorage.getItem('drc_cart') || '';
-const items = itemsParam ? decodeURIComponent(itemsParam).split('|') : [];
+const ref = params.get('ref') || sessionStorage.getItem('drc_ref') || null;
 
-// Clear sessionStorage
+// Clear sessionStorage (no longer used to decide what to show, but tidy up anyway)
 sessionStorage.removeItem('drc_cart');
 sessionStorage.removeItem('drc_email');
 sessionStorage.removeItem('drc_ref');
 
-// Show reference
-document.getElementById('refDisplay').textContent = ref;
-
-// Build downloads list
 const list = document.getElementById('downloadsList');
-if(items.length === 0) {
-  list.innerHTML = '<p style="color:var(--text-dim);font-size:14px;">No items found. Please contact support with your reference number.</p>';
-} else {
-  items.forEach(itemName => {
-    const product = downloadLinks[itemName.trim()];
-    const url = product ? product.url : '#';
-    const desc = product ? product.desc : 'Contact us for your download link';
-    const isReady = url !== 'YOUR_GOOGLE_DRIVE_LINK_HERE' && url !== '#';
+document.getElementById('refDisplay').textContent = ref || 'N/A';
 
-    list.innerHTML += `
+async function loadVerifiedDownloads() {
+  if (!ref) {
+    list.innerHTML = '<p style="color:var(--text-dim);font-size:14px;">No transaction reference found. Please contact support.</p>';
+    return;
+  }
+
+  list.innerHTML = '<p style="color:var(--text-dim);font-size:14px;">Verifying your payment…</p>';
+
+  try {
+    const res = await fetch('/.netlify/functions/verify-payment?ref=' + encodeURIComponent(ref));
+    const data = await res.json();
+
+    if (!res.ok || !data.verified) {
+      list.innerHTML = `<p style="color:var(--text-dim);font-size:14px;">
+        We could not verify this payment (${data.error || 'unknown error'}).
+        If you just paid, contact us at <strong>delrhema@gmail.com</strong> with your reference number
+        <strong>${ref}</strong> and we will sort it out.
+      </p>`;
+      return;
+    }
+
+    const items = data.products ? data.products.split('|').map(s => s.trim()).filter(Boolean) : [];
+
+    if (items.length === 0) {
+      list.innerHTML = '<p style="color:var(--text-dim);font-size:14px;">Payment verified, but no items were found on this order. Please contact support with your reference number.</p>';
+      return;
+    }
+
+    list.innerHTML = items.map(itemName => {
+      const product = downloadLinks[itemName];
+      const url = product ? product.url : '#';
+      const desc = product ? product.desc : 'Contact us for your download link';
+      const isReady = url !== 'YOUR_GOOGLE_DRIVE_LINK_HERE' && url !== '#';
+
+      return `
       <div class="download-card">
         <div class="download-info">
           <div class="download-icon">📐</div>
-          <div class="download-name">${itemName.trim()}</div>
+          <div class="download-name">${itemName}</div>
           <div class="download-desc">${desc}</div>
         </div>
         ${isReady
@@ -195,8 +217,13 @@ if(items.length === 0) {
           : `<a href="mailto:delrhema@gmail.com?subject=Download Request - ${encodeURIComponent(itemName)}&body=Transaction Reference: ${ref}" class="download-btn" style="background:var(--gold);color:var(--dark);">Request File →</a>`
         }
       </div>`;
-  });
+    }).join('');
+  } catch (err) {
+    list.innerHTML = '<p style="color:var(--text-dim);font-size:14px;">Something went wrong verifying your payment. Please contact support with your reference number.</p>';
+  }
 }
+
+loadVerifiedDownloads();
 </script>
 </body>
 </html>

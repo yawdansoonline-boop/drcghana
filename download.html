@@ -71,12 +71,12 @@
     <p>Architectural & Structural Design Studio</p>
   </div>
 
-  <!-- SUCCESS HEADER -->
-  <div class="success-header">
-    <div class="success-icon">✓</div>
-    <p class="success-eyebrow">Payment Confirmed</p>
-    <h1 class="success-title">Thank You for Your<br><em>Purchase!</em></h1>
-    <p class="success-sub">Your payment was successful. Your design packages are ready to download below.<br>A receipt has been sent to your email address.</p>
+  <!-- STATUS HEADER (filled in by JS based on real verification result) -->
+  <div class="success-header" id="statusHeader">
+    <div class="success-icon" id="statusIcon">⏳</div>
+    <p class="success-eyebrow" id="statusEyebrow">Verifying Payment</p>
+    <h1 class="success-title" id="statusTitle">Checking your <em>payment…</em></h1>
+    <p class="success-sub" id="statusSub">Please wait while we confirm this with Paystack. This only takes a moment.</p>
   </div>
 
   <!-- REF BOX -->
@@ -171,8 +171,31 @@ sessionStorage.removeItem('drc_ref');
 const list = document.getElementById('downloadsList');
 document.getElementById('refDisplay').textContent = ref || 'N/A';
 
+function setStatusHeader(state, message) {
+  const icon = document.getElementById('statusIcon');
+  const eyebrow = document.getElementById('statusEyebrow');
+  const title = document.getElementById('statusTitle');
+  const sub = document.getElementById('statusSub');
+
+  if (state === 'success') {
+    icon.textContent = '✓';
+    eyebrow.textContent = 'Payment Confirmed';
+    title.innerHTML = 'Thank You for Your<br><em>Purchase!</em>';
+    sub.innerHTML = 'Your payment was successful. Your design packages are ready to download below.<br>A receipt has been sent to your email address.';
+  } else {
+    icon.textContent = '⚠';
+    icon.style.background = 'rgba(201,76,76,0.15)';
+    icon.style.borderColor = '#C94C4C';
+    eyebrow.textContent = 'Payment Not Verified';
+    eyebrow.style.color = '#C94C4C';
+    title.innerHTML = 'We Could Not Verify<br><em>This Payment</em>';
+    sub.textContent = message || 'Please check the details below or contact support.';
+  }
+}
+
 async function loadVerifiedDownloads() {
   if (!ref) {
+    setStatusHeader('error', 'No transaction reference was found in this link.');
     list.innerHTML = '<p style="color:var(--text-dim);font-size:14px;">No transaction reference found. Please contact support.</p>';
     return;
   }
@@ -184,6 +207,7 @@ async function loadVerifiedDownloads() {
     const data = await res.json();
 
     if (!res.ok || !data.verified) {
+      setStatusHeader('error', 'This transaction reference could not be confirmed with Paystack.');
       list.innerHTML = `<p style="color:var(--text-dim);font-size:14px;">
         We could not verify this payment (${data.error || 'unknown error'}).
         If you just paid, contact us at <strong>delrhema@gmail.com</strong> with your reference number
@@ -191,6 +215,8 @@ async function loadVerifiedDownloads() {
       </p>`;
       return;
     }
+
+    setStatusHeader('success');
 
     const items = data.products ? data.products.split('|').map(s => s.trim()).filter(Boolean) : [];
 
@@ -219,6 +245,7 @@ async function loadVerifiedDownloads() {
       </div>`;
     }).join('');
   } catch (err) {
+    setStatusHeader('error', 'Something went wrong while verifying your payment.');
     list.innerHTML = '<p style="color:var(--text-dim);font-size:14px;">Something went wrong verifying your payment. Please contact support with your reference number.</p>';
   }
 }

@@ -7,12 +7,17 @@
 // 1. Receives a payment reference (e.g. ?ref=DRCGHANA_123456789)
 // 2. Asks Paystack directly: "was this reference a real, successful payment?"
 // 3. Reads back the list of products claimed in metadata, and independently
-//    recalculates what that list SHOULD have cost from our own price list —
-//    then checks it matches what was actually paid. This is what stops
-//    someone from paying a small amount while claiming an expensive bundle.
+//    recalculates what that list SHOULD have cost from products.json (the
+//    same file the storefront uses) — then checks it matches what was
+//    actually paid. This is what stops someone from paying a small amount
+//    while claiming an expensive bundle.
 // 4. Returns verified info to download.html only if both checks pass.
+//
+// NOTE: this reads ../../products.json — the single product list at your
+// repo root. Update prices there and both the storefront AND this check
+// stay in sync automatically. No second file to remember.
 
-const catalog = require('./products-data.js');
+const catalog = require('../../products.json');
 
 exports.handler = async function (event) {
   // Only allow GET requests

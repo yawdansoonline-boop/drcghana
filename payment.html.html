@@ -670,12 +670,12 @@
   &copy; 2025 <span>DRC Ghana</span>. All rights reserved. &nbsp;|&nbsp; Powered by <span>Paystack</span>
 </footer>
 
-<!-- Success Modal -->
+<!-- Status Modal (content filled in by JS based on real verification result) -->
 <div class="modal-overlay" id="successModal">
   <div class="modal">
-    <div class="icon">✅</div>
-    <h2>Payment Successful!</h2>
-    <p>Thank you for your payment. A confirmation has been sent to your email address.</p>
+    <div class="icon" id="modalIcon">⏳</div>
+    <h2 id="modalTitle">Verifying Payment…</h2>
+    <p id="modalText">Please wait while we confirm this with Paystack.</p>
     <div class="modal-ref" id="refCode">Ref: ...</div>
     <button class="modal-close" onclick="closeModal()">Done</button>
   </div>
@@ -731,7 +731,7 @@
       email: email,
       amount: Math.round(amt * 100),   // convert to pesewas
       currency: 'GHS',
-      ref: 'DRC-' + Date.now(),
+      ref: 'DRCPAY_' + Date.now() + '_' + Math.floor(Math.random() * 100000),
       metadata: {
         custom_fields: [
           { display_name: 'Full Name',    variable_name: 'full_name',    value: name },
@@ -740,8 +740,20 @@
         ]
       },
       callback: function(response) {
-        document.getElementById('refCode').textContent = 'Ref: ' + response.reference;
-        document.getElementById('successModal').classList.add('open');
+        // Don't trust this callback alone — ask our server to confirm
+        // with Paystack directly before showing "Payment Successful."
+        showVerifyingModal(response.reference);
+
+        fetch('/.netlify/functions/verify-generic-payment?ref=' + encodeURIComponent(response.reference))
+          .then(r => r.json())
+          .then(data => {
+            if (data.verified) {
+              showSuccessModal(data);
+            } else {
+              showFailureModal(data.error, response.reference);
+            }
+          })
+          .catch(() => showFailureModal('Something went wrong verifying your payment.', response.reference));
       },
       onClose: function() {
         // user closed payment modal — do nothing
@@ -751,9 +763,35 @@
     handler.openIframe();
   }
 
+  // ── Modal states
+  function showVerifyingModal(ref) {
+    document.getElementById('modalIcon').textContent = '⏳';
+    document.getElementById('modalTitle').textContent = 'Verifying Payment…';
+    document.getElementById('modalText').textContent = 'Please wait while we confirm this with Paystack.';
+    document.getElementById('refCode').textContent = 'Ref: ' + ref;
+    document.getElementById('successModal').classList.add('open');
+  }
+
+  function showSuccessModal(data) {
+    document.getElementById('modalIcon').textContent = '✅';
+    document.getElementById('modalTitle').textContent = 'Payment Successful!';
+    document.getElementById('modalText').textContent = 'Thank you for your payment. A confirmation has been sent to your email address.';
+    document.getElementById('refCode').textContent = 'Ref: ' + data.reference;
+  }
+
+  function showFailureModal(errorMessage, ref) {
+    document.getElementById('modalIcon').textContent = '⚠️';
+    document.getElementById('modalTitle').textContent = 'Payment Could Not Be Verified';
+    document.getElementById('modalText').textContent = (errorMessage || 'Please contact us') + ' — if you were charged, contact delrhema@gmail.com with your reference number.';
+    document.getElementById('refCode').textContent = 'Ref: ' + ref;
+  }
+
   // ── Close modal
   function closeModal() {
     document.getElementById('successModal').classList.remove('open');
+    document.getElementById('modalIcon').textContent = '⏳';
+    document.getElementById('modalTitle').textContent = 'Verifying Payment…';
+    document.getElementById('modalText').textContent = 'Please wait while we confirm this with Paystack.';
     document.getElementById('amount').value = '';
     document.getElementById('fullName').value = '';
     document.getElementById('email').value = '';

@@ -16,18 +16,28 @@
 // NOTE: this reads ../../products.json — the single product list at your
 // repo root. Update prices there and both the storefront AND this check
 // stay in sync automatically. No second file to remember.
+//
+// LOGGING: console.log/error calls here show up in Netlify under
+// Site -> Logs -> Functions -> verify-payment. Useful for debugging a
+// stuck payment. Consider trimming these once things are stable so logs
+// don't fill up with noise (and don't log secretKey itself).
 
 const catalog = require('../../products.json');
 
 exports.handler = async function (event) {
+  console.log('verify-payment started');
+
   // Only allow GET requests
   if (event.httpMethod !== 'GET') {
+    console.log('Rejected: non-GET method:', event.httpMethod);
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   const ref = event.queryStringParameters && event.queryStringParameters.ref;
+  console.log('Reference:', ref);
 
   if (!ref) {
+    console.log('Rejected: missing reference');
     return {
       statusCode: 400,
       body: JSON.stringify({ verified: false, error: 'Missing transaction reference' }),
@@ -35,9 +45,11 @@ exports.handler = async function (event) {
   }
 
   const secretKey = process.env.PAYSTACK_SECRET_KEY;
+  console.log('Secret key exists:', !!secretKey);
 
   if (!secretKey) {
     // This means you forgot to set the environment variable in Netlify
+    console.error('Server misconfigured: PAYSTACK_SECRET_KEY not set');
     return {
       statusCode: 500,
       body: JSON.stringify({ verified: false, error: 'Server misconfigured: missing secret key' }),
@@ -55,10 +67,14 @@ exports.handler = async function (event) {
       }
     );
 
+    console.log('Paystack HTTP status:', paystackRes.status);
+
     const result = await paystackRes.json();
+    console.log('Paystack response:', JSON.stringify(result));
 
     // Paystack returns status:false at the top level if the ref doesn't exist at all
     if (!result.status || !result.data) {
+      console.log('Rejected: transaction not found for ref', ref);
       return {
         statusCode: 404,
         body: JSON.stringify({ verified: false, error: 'Transaction not found' }),
@@ -66,9 +82,11 @@ exports.handler = async function (event) {
     }
 
     const tx = result.data;
+    console.log('Transaction status:', tx.status, '| amount (pesewas):', tx.amount);
 
     // The actual check that matters: did the payment succeed?
     if (tx.status !== 'success') {
+      console.log('Rejected: payment not successful, status =', tx.status);
       return {
         statusCode: 402,
         body: JSON.stringify({ verified: false, error: 'Payment was not successful', status: tx.status }),
@@ -80,10 +98,13 @@ exports.handler = async function (event) {
     const customFields = (tx.metadata && tx.metadata.custom_fields) || [];
     const productsField = customFields.find((f) => f.variable_name === 'products');
     const products = productsField ? productsField.value : '';
+    console.log('Raw products field from metadata:', products);
 
     const itemNames = products ? products.split('|').map((s) => s.trim()).filter(Boolean) : [];
+    console.log('Parsed item names:', itemNames);
 
     if (itemNames.length === 0) {
+      console.log('Rejected: no products found on this order');
       return {
         statusCode: 402,
         body: JSON.stringify({ verified: false, error: 'No products found on this order' }),
@@ -97,6 +118,7 @@ exports.handler = async function (event) {
       const match = catalog.find((p) => p.name === name);
       if (!match) {
         // Unknown product name — either a typo or someone crafting fake metadata.
+        console.log('Rejected: unrecognized product name:', name);
         return {
           statusCode: 402,
           body: JSON.stringify({ verified: false, error: `Unrecognized product: ${name}` }),
@@ -106,10 +128,12 @@ exports.handler = async function (event) {
     }
 
     const expectedTotalPesewas = Math.round(expectedTotalGHS * 100);
+    console.log('Expected total (pesewas):', expectedTotalPesewas, '| Actual paid (pesewas):', tx.amount);
 
     if (tx.amount !== expectedTotalPesewas) {
       // This is the case that matters: someone paid a different amount
       // than what the claimed products actually cost. Flag it, don't fulfil it.
+      console.log('Rejected: amount mismatch — expected', expectedTotalPesewas, 'got', tx.amount);
       return {
         statusCode: 402,
         body: JSON.stringify({
@@ -118,6 +142,8 @@ exports.handler = async function (event) {
         }),
       };
     }
+
+    console.log('Verified OK for ref:', tx.reference);
 
     return {
       statusCode: 200,
@@ -130,9 +156,10 @@ exports.handler = async function (event) {
       }),
     };
   } catch (err) {
+    console.error('Verification failed:', err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ verified: false, error: 'Verification request failed' }),
+      body: JSON.stringify({ verified: false, error: err.message }),
     };
   }
 };

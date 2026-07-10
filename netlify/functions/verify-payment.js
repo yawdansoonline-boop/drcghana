@@ -44,8 +44,18 @@ exports.handler = async function (event) {
     };
   }
 
-  const secretKey = process.env.PAYSTACK_SECRET_KEY;
+  let secretKey = process.env.PAYSTACK_SECRET_KEY;
   console.log('Secret key exists:', !!secretKey);
+  if (secretKey) {
+    // Safe to log: length and prefix only, never the full key.
+    console.log('Secret key length:', secretKey.length);
+    console.log('Secret key prefix:', secretKey.substring(0, 4));
+    console.log('Secret key has leading/trailing whitespace:', secretKey !== secretKey.trim());
+    secretKey = secretKey.trim();
+    if (!secretKey.startsWith('sk_')) {
+      console.log('WARNING: key does not start with "sk_" — this may be the wrong key type (e.g. a publishable pk_ key, or a value with stray quotes)');
+    }
+  }
 
   if (!secretKey) {
     // This means you forgot to set the environment variable in Netlify

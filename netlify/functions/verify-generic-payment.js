@@ -6,6 +6,9 @@
 // against here — the customer picks their own amount — so this function's
 // job is simpler: confirm with Paystack directly that the payment actually
 // succeeded, instead of trusting the browser's popup callback alone.
+//
+// LOGGING: one line per outcome, no customer emails/phone numbers/full
+// Paystack payloads. Site -> Logs -> Functions -> verify-generic-payment.
 
 exports.handler = async function (event) {
   if (event.httpMethod !== 'GET') {
@@ -20,6 +23,7 @@ exports.handler = async function (event) {
 
   const secretKey = process.env.PAYSTACK_SECRET_KEY;
   if (!secretKey) {
+    console.error('[verify-generic-payment]', ref, '- server misconfigured: missing secret key');
     return { statusCode: 500, body: JSON.stringify({ verified: false, error: 'Server misconfigured: missing secret key' }) };
   }
 
@@ -31,12 +35,14 @@ exports.handler = async function (event) {
     const result = await paystackRes.json();
 
     if (!result.status || !result.data) {
+      console.log('[verify-generic-payment]', ref, '- transaction not found');
       return { statusCode: 404, body: JSON.stringify({ verified: false, error: 'Transaction not found' }) };
     }
 
     const tx = result.data;
 
     if (tx.status !== 'success' || !tx.amount || tx.amount <= 0) {
+      console.log('[verify-generic-payment]', ref, '- not successful, status =', tx.status);
       return {
         statusCode: 402,
         body: JSON.stringify({ verified: false, error: 'Payment was not successful', status: tx.status }),
@@ -48,6 +54,8 @@ exports.handler = async function (event) {
       const f = customFields.find((c) => c.variable_name === name);
       return f ? f.value : '';
     };
+
+    console.log('[verify-generic-payment]', ref, '- verified OK');
 
     return {
       statusCode: 200,
@@ -61,6 +69,7 @@ exports.handler = async function (event) {
       }),
     };
   } catch (err) {
+    console.error('[verify-generic-payment]', ref, '- verification request failed:', err.message);
     return { statusCode: 500, body: JSON.stringify({ verified: false, error: 'Verification request failed' }) };
   }
 };

@@ -554,24 +554,24 @@
       <div class="radio-dot"></div>
     </div>
 
-    <div class="service-card" onclick="selectService(this, 'Training & Seminar')">
+    <div class="service-card" onclick="selectService(this, 'Land Registration Fee')">
       <div class="service-icon">
-        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
       </div>
       <div class="service-info">
-        <h3>Training &amp; Seminar</h3>
-        <p>Payment for workshops, training sessions or seminars.</p>
+        <h3>Land Registration Fee</h3>
+        <p>Initial deposit of GH₵1,000 to begin land registration. Final cost depends on project scope.</p>
       </div>
       <div class="radio-dot"></div>
     </div>
 
-    <div class="service-card" onclick="selectService(this, 'Consultation Fee')">
+    <div class="service-card" onclick="selectService(this, 'Site Supervision Fee')">
       <div class="service-icon">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M2 20h20M4 20V10l8-6 8 6v10M9 20v-5h6v5"/><circle cx="12" cy="8" r="1.5"/></svg>
       </div>
       <div class="service-info">
-        <h3>Consultation Fee</h3>
-        <p>Professional advisory or consultation service payment.</p>
+        <h3>Site Supervision Fee</h3>
+        <p>Initial deposit of GH₵1,000 for site supervision services. Final cost depends on project scope.</p>
       </div>
       <div class="radio-dot"></div>
     </div>
@@ -596,6 +596,16 @@
         <p>Any other payment not listed above.</p>
       </div>
       <div class="radio-dot"></div>
+    </div>
+
+    <div class="service-card" style="border-color:var(--green);" onclick="bookConsultation()">
+      <div class="service-icon" style="background:var(--green);">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </div>
+      <div class="service-info">
+        <h3>Book a Consultation <span style="color:var(--green);font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;">Free</span></h3>
+        <p>Schedule a free consultation with our team — no payment required.</p>
+      </div>
     </div>
   </div>
 
@@ -693,6 +703,22 @@
     selectedService = name;
     document.getElementById('serviceField').value = name;
     document.getElementById('sumService').textContent = name;
+
+    // Land Registration and Site Supervision start with a GH₵1,000 initial/deposit amount
+    if (name === 'Land Registration Fee' || name === 'Site Supervision Fee') {
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('amount').value = 1000;
+      document.querySelectorAll('.preset-btn').forEach(b => {
+        if (b.textContent.trim() === 'GHS 1,000') b.classList.add('active');
+      });
+      updateSummary();
+    }
+  }
+
+  // ── Free consultation booking — no payment, opens WhatsApp directly
+  function bookConsultation() {
+    const message = encodeURIComponent("Hi, I'd like to book a free consultation with DRCGHANA.");
+    window.open('https://wa.me/233244072436?text=' + message, '_blank');
   }
 
   // ── Amount presets

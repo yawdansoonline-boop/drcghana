@@ -134,7 +134,6 @@
   .product-card:hover .product-img img { filter: brightness(0.9) saturate(1); }
   .product-badge { position: absolute; top: 12px; left: 12px; background: var(--gold); color: var(--dark); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 4px 10px; font-weight: 500; }
   .product-badge.new { background: var(--green); color: var(--white); }
-  .product-badge.free { background: var(--green-light); color: var(--dark); }
   .product-body { padding: 1.25rem 1.25rem 1.5rem; }
   .product-category { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--green-light); margin-bottom: 0.5rem; }
   .product-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: var(--white); margin-bottom: 0.5rem; line-height: 1.2; }
@@ -142,9 +141,6 @@
   .product-footer { display: flex; align-items: center; justify-content: space-between; }
   .product-price { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--gold-light); background: rgba(201,160,48,0.12); padding: 4px 12px; border-radius: var(--radius); }
   .product-price .currency { font-size: 15px; color: var(--gold-light); opacity: 0.85; margin-right: 2px; font-weight: 500; }
-  .free-label { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--green-light); }
-  .free-download-btn { padding: 8px 18px; background: var(--gold); color: var(--dark); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; border-radius: var(--radius); font-weight: 600; transition: background 0.2s; }
-  .free-download-btn:hover { background: var(--gold-light); }
   .product-includes { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
   .product-includes li { font-size: 11.5px; color: var(--text-dim); display: flex; align-items: center; gap: 5px; }
   .product-includes li::before { content: '✔'; color: var(--green-light); font-size: 10px; flex-shrink: 0; }
@@ -322,10 +318,10 @@
 <div class="mobile-menu" id="mobileMenu">
   <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
   <a href="#products" onclick="filterProducts('all');closeMobileMenu()">All Products</a>
+  <a href="about.html">About Us</a>
   <a href="#products" onclick="filterProducts('residential');closeMobileMenu()">Residential</a>
   <a href="#products" onclick="filterProducts('commercial');closeMobileMenu()">Commercial</a>
   <a href="#products" onclick="filterProducts('structural');closeMobileMenu()">Structural</a>
-  <a href="#about" onclick="closeMobileMenu()">About</a>
   <a href="#contact" onclick="closeMobileMenu()">Contact</a>
   <a href="payment.html" style="color:var(--gold);">Make Payment</a>
 </div>
@@ -351,10 +347,10 @@
   </div>
   <div class="nav-links">
     <a href="#products" onclick="filterProducts('all')">All Products</a>
+    <a href="about.html">About Us</a>
     <a href="#products" onclick="filterProducts('residential')">Residential</a>
     <a href="#products" onclick="filterProducts('commercial')">Commercial</a>
     <a href="#products" onclick="filterProducts('structural')">Structural</a>
-    <a href="#about">About</a>
     <a href="#contact">Contact</a>
     <a href="payment.html" style="color:var(--gold);font-weight:500;">Make Payment</a>
   </div>
@@ -491,7 +487,6 @@
     <h3 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#F2F7EE;line-height:1.1;">Pay for a Service <em style="font-style:italic;color:#E8C96A;">Instantly</em></h3>
     <p style="font-size:13px;color:#A8B89E;margin-top:0.4rem;">Consultation, registration, training or any other payment.</p>
   </div>
-  <a href="forms.html" style="display:inline-block;padding:14px 36px;background:transparent;border:1px solid #C9A030;color:#C9A030;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;font-weight:700;border-radius:2px;text-decoration:none;white-space:nowrap;transition:background 0.2s;margin-right:10px;">📝 Get a Quote →</a>
   <a href="payment.html" style="display:inline-block;padding:14px 36px;background:#C9A030;color:#0A0E0B;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;font-weight:700;border-radius:2px;text-decoration:none;white-space:nowrap;transition:background 0.2s;">💳 Make a Payment →</a>
 </div>
 
@@ -544,7 +539,7 @@
 <script>
 let products=[];
 let cart=[];
-function renderProducts(f){const g=document.getElementById('productsGrid');const p=f==='all'?products:products.filter(x=>x.category===f);g.innerHTML=p.map(p=>`<div class="product-card"><div class="product-img"><img src="${p.img}" alt="${p.name}" loading="lazy">${p.badge?`<div class="product-badge ${p.badge==='New'?'new':p.badge==='Free'?'free':''}">${p.badge}</div>`:''}</div><div class="product-body"><div class="product-category">${p.category}</div><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div>${p.includes&&p.includes.length?`<ul class="product-includes">${p.includes.map(i=>`<li>${i}</li>`).join('')}</ul>`:''}<div class="product-footer">${p.free?`<div class="free-label">Free</div><a class="free-download-btn" href="${p.downloadUrl}" target="_blank" rel="noopener">Download →</a>`:`<div class="product-price"><span class="currency">GH₵</span>${p.price.toLocaleString()}</div><button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart</button>`}</div></div></div>`).join('');}
+function renderProducts(f){const g=document.getElementById('productsGrid');const p=f==='all'?products:products.filter(x=>x.category===f);g.innerHTML=p.map(p=>`<div class="product-card"><div class="product-img"><img src="${p.img}" alt="${p.name}" loading="lazy">${p.badge?`<div class="product-badge ${p.badge==='New'?'new':''}">${p.badge}</div>`:''}</div><div class="product-body"><div class="product-category">${p.category}</div><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div>${p.includes&&p.includes.length?`<ul class="product-includes">${p.includes.map(i=>`<li>${i}</li>`).join('')}</ul>`:''}<div class="product-footer"><div class="product-price"><span class="currency">GH₵</span>${p.price.toLocaleString()}</div><button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart</button></div></div></div>`).join('');}
 function filterProducts(c,b){renderProducts(c);document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');}
 function addToCart(id){const p=products.find(x=>x.id===id);if(!p){showToast('Product not found');return;}if(cart.find(i=>i.id===p.id)){showToast('Already in cart');return;}cart.push(p);updateCartUI();showToast('✓ "'+p.name+'" added to cart');}
 function removeFromCart(id){cart=cart.filter(i=>i.id!==id);updateCartUI();}

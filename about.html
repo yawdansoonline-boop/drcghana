@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us — DRCGHANA</title>
+<link rel="icon" type="image/png" href="/logo_circle.png">
+<meta name="description" content="DRCGHANA is the digital design arm of Del Rhema Construction — a Ghanaian-owned company specializing in architectural and structural design, civil and general construction.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A030; --gold-light: #E8C96A;
+    --green: #1B6B35; --green-light: #2A8A4A; --green-dim: #14522A;
+    --dark: #0A0E0B; --dark-2: #121710; --dark-3: #181E14; --dark-4: #222B1C;
+    --mid: #344028; --text-dim: #7A8A74; --text-mid: #A8B89E; --text-light: #E0ECD8; --white: #F2F7EE;
+    --radius: 2px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--dark); color: var(--text-light); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.7; }
+  a { color: inherit; text-decoration: none; }
+
+  nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 4rem; height: 76px; background: rgba(10,14,11,0.97); backdrop-filter: blur(16px); border-bottom: 0.5px solid rgba(27,107,53,0.3); }
+  .nav-logo-wrap { display: flex; align-items: center; gap: 12px; }
+  .nav-logo-img { height: 48px; width: 48px; border-radius: 50%; object-fit: cover; }
+  .nav-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 600; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; }
+  .back-link { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-mid); border: 0.5px solid rgba(201,160,48,0.35); padding: 9px 20px; border-radius: var(--radius); transition: all 0.2s; }
+  .back-link:hover { color: var(--gold); border-color: var(--gold); }
+
+  .page-hero { padding: 4.5rem 4rem 3rem; text-align: center; border-bottom: 0.5px solid rgba(201,160,48,0.15); }
+  .page-eyebrow { font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--green-light); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .page-eyebrow::before, .page-eyebrow::after { content: ''; width: 32px; height: 1px; background: var(--green-light); }
+  .page-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5.5vw, 58px); font-weight: 300; color: var(--white); line-height: 1.1; margin-bottom: 1rem; }
+  .page-hero h1 em { font-style: italic; color: var(--gold-light); }
+  .page-hero p { color: var(--text-mid); max-width: 640px; margin: 0 auto; font-size: 15px; }
+
+  .section { max-width: 980px; margin: 0 auto; padding: 4rem; }
+  .section-eyebrow { font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--green-light); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 10px; }
+  .section-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--green-light); }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(26px, 3.5vw, 38px); font-weight: 300; color: var(--white); margin-bottom: 1.5rem; }
+  .section-title em { font-style: italic; color: var(--gold-light); }
+  .section p.body-text { color: var(--text-mid); font-size: 15px; line-height: 1.9; margin-bottom: 1rem; }
+  .reg-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-dim); border: 0.5px solid rgba(201,160,48,0.25); padding: 6px 14px; border-radius: var(--radius); margin-top: 1rem; }
+
+  .divider { height: 0.5px; background: var(--mid); }
+
+  .vmv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .vmv-card { background: var(--dark-2); border: 0.5px solid var(--dark-4); border-radius: 6px; padding: 2rem; }
+  .vmv-card .vmv-icon { font-size: 22px; color: var(--green-light); margin-bottom: 0.75rem; }
+  .vmv-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; color: var(--white); margin-bottom: 0.75rem; }
+  .vmv-card p, .vmv-card ul { color: var(--text-dim); font-size: 13.5px; line-height: 1.8; }
+  .vmv-card ul { list-style: none; }
+  .vmv-card li { margin-bottom: 0.6rem; padding-left: 1.1rem; position: relative; }
+  .vmv-card li::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
+  .values-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .value-tag { background: rgba(201,160,48,0.1); border: 0.5px solid rgba(201,160,48,0.3); color: var(--gold-light); font-size: 12px; padding: 6px 14px; border-radius: 20px; }
+
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .service-block { background: var(--dark-2); border: 0.5px solid var(--dark-4); border-radius: 6px; padding: 1.75rem; border-top: 3px solid var(--gold); }
+  .service-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--white); margin-bottom: 1rem; }
+  .service-block ul { list-style: none; }
+  .service-block li { font-size: 13.5px; color: var(--text-dim); margin-bottom: 0.6rem; display: flex; align-items: flex-start; gap: 8px; }
+  .service-block li::before { content: '✔'; color: var(--green-light); font-size: 11px; margin-top: 3px; flex-shrink: 0; }
+
+  footer { text-align: center; padding: 2.5rem; color: var(--text-dim); font-size: 12px; border-top: 0.5px solid rgba(27,107,53,0.15); }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 1.25rem; }
+    .page-hero { padding: 3rem 1.25rem 2.5rem; }
+    .section { padding: 2.5rem 1.25rem; }
+    .vmv-grid, .services-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo-wrap">
+    <img src="/logo_circle.png" alt="DRCGHANA Logo" class="nav-logo-img">
+    <div class="nav-logo-text">DRCGHANA</div>
+  </div>
+  <a href="/" class="back-link">← Back to Store</a>
+</nav>
+
+<section class="page-hero">
+  <p class="page-eyebrow">About Us</p>
+  <h1>The Story Behind <em>DRCGHANA</em></h1>
+  <p>DRCGHANA is the digital design arm of Del Rhema Construction — bringing professional, ready-to-build architectural and structural designs to Ghana, online.</p>
+</section>
+
+<section class="section">
+  <p class="section-eyebrow">Company Introduction</p>
+  <h2 class="section-title">Who We <em>Are</em></h2>
+  <p class="body-text">DRCGHANA is the digital design arm of <strong>Del Rhema Construction</strong>, a proudly Ghanaian-owned company duly registered with the Registrar General of Ghana. Del Rhema Construction specializes in General Building Construction, Civil Engineering, Plumbing and Electrical Engineering, and Architectural and Structural Designing — bringing together the skills, resources, and partnerships needed to deliver projects our clients can be proud of.</p>
+  <p class="body-text">Through DRCGHANA, we've made our professional design expertise available online — giving landowners, contractors, and homeowners across Ghana instant access to ready-to-build architectural and structural design packages, without the wait of a full custom commission.</p>
+  <div class="reg-badge">🏛 Company Registration No. CS030780222</div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <p class="section-eyebrow">Our Commitments</p>
+  <h2 class="section-title">Vision, Mission <em>&amp; Values</em></h2>
+  <div class="vmv-grid">
+    <div class="vmv-card">
+      <div class="vmv-icon">◈</div>
+      <h3>Our Vision</h3>
+      <p>To provide our customers with outstanding service, achieved through a well-established quality management system, flexibility in how we work, and a team of competent, qualified professionals who accept nothing less than total quality. We are equally committed to the ongoing growth of our people, investing in training so our team — and the service we provide — keeps getting stronger.</p>
+    </div>
+    <div class="vmv-card">
+      <div class="vmv-icon">◉</div>
+      <h3>Our Mission</h3>
+      <ul>
+        <li>Give our clients excellent service, treating them with the integrity and honesty they deserve.</li>
+        <li>Deliver quality work on time, at our clients' convenience.</li>
+        <li>Use quality materials so every customer gets real value for their money.</li>
+        <li>Train young professionals who want to build a career in this industry.</li>
+      </ul>
+    </div>
+    <div class="vmv-card">
+      <div class="vmv-icon">◆</div>
+      <h3>Our Values</h3>
+      <div class="values-tags">
+        <span class="value-tag">Excellence</span>
+        <span class="value-tag">Trust</span>
+        <span class="value-tag">Respect</span>
+        <span class="value-tag">Speed</span>
+        <span class="value-tag">Mutual Relationship</span>
+        <span class="value-tag">Consistent Quality</span>
+        <span class="value-tag">Consistent Innovation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <p class="section-eyebrow">What We Offer</p>
+  <h2 class="section-title">Our <em>Services</em></h2>
+  <div class="services-grid">
+    <div class="service-block">
+      <h3>Design Services</h3>
+      <ul>
+        <li>Architectural Drawing &amp; Detailing</li>
+        <li>Structural Designing &amp; Detailing</li>
+        <li>Bill of Quantities (BOQ)</li>
+      </ul>
+    </div>
+    <div class="service-block">
+      <h3>Construction</h3>
+      <ul>
+        <li>General building construction &amp; maintenance</li>
+        <li>Excavation, trenching &amp; piping</li>
+        <li>Painting, tiling &amp; plastering</li>
+        <li>Landscaping &amp; road construction/maintenance</li>
+        <li>Structural waterproofing &amp; corrosion protection</li>
+      </ul>
+    </div>
+    <div class="service-block">
+      <h3>Engineering &amp; Civil Works</h3>
+      <ul>
+        <li>Plumbing &amp; electrical works</li>
+        <li>General steel engineering</li>
+        <li>Erection and dismantling of structural steel</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 DRCGHANA — Del Rhema Construction. All rights reserved.</footer>
+
+</body>
+</html>

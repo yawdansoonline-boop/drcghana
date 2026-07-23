@@ -314,6 +314,27 @@
     .products-grid { grid-template-columns: repeat(2, 1fr); }
     .why-grid { grid-template-columns: repeat(2, 1fr); }
   }
+
+  /* IMAGE LIGHTBOX */
+.lightbox-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 500; align-items: center; justify-content: center; }
+.lightbox-overlay.open { display: flex; }
+.lightbox-img-wrap { position: relative; max-width: 85vw; max-height: 85vh; }
+.lightbox-img-wrap img { max-width: 85vw; max-height: 85vh; object-fit: contain; border-radius: 4px; }
+.lightbox-next {
+  position: absolute; right: -60px; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.1);
+  color: var(--white); display: flex; align-items: center; justify-content: center;
+  font-size: 22px; border: 0.5px solid rgba(255,255,255,0.3); transition: background 0.2s;
+}
+.lightbox-next:hover { background: var(--gold); color: var(--dark); }
+.lightbox-close {
+  position: absolute; top: -50px; right: 0; color: var(--white); font-size: 28px;
+  background: none; border: none; cursor: pointer;
+}
+@media (max-width: 768px) {
+  .lightbox-next { right: 8px; }
+  .lightbox-close { top: -44px; right: 0; }
+}
 </style>
 </head>
 <body>
@@ -539,12 +560,20 @@
 <button class="checkout-btn" onclick="initiatePayment()">Proceed to Checkout →</button>
   </div>
 </div>
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+  <div class="lightbox-img-wrap" onclick="event.stopPropagation()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img id="lightboxImg" src="" alt="Preview">
+    <button class="lightbox-next" id="lightboxNext" onclick="event.stopPropagation();nextLightboxImage()">›</button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
 let products=[];
 let cart=[];
-function renderProducts(f){const g=document.getElementById('productsGrid');const p=f==='all'?products:products.filter(x=>x.category===f);g.innerHTML=p.map(p=>`<div class="product-card"><div class="product-img"><img src="${p.img}" alt="${p.name}" loading="lazy">${p.badge?`<div class="product-badge ${p.badge==='New'?'new':p.badge==='Free'?'free':''}">${p.badge}</div>`:''}</div><div class="product-body"><div class="product-category">${p.category}</div><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div>${p.includes&&p.includes.length?`<ul class="product-includes">${p.includes.map(i=>`<li>${i}</li>`).join('')}</ul>`:''}<div class="product-footer">${p.free?`<div class="free-label">Free</div><a class="free-download-btn" href="${p.downloadUrl}" target="_blank" rel="noopener">Download →</a>`:`<div class="product-price"><span class="currency">GH₵</span>${p.price.toLocaleString()}</div><button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart</button>`}</div></div></div>`).join('');}
+function renderProducts(f){const g=document.getElementById('productsGrid');const p=f==='all'?products:products.filter(x=>x.category===f);g.innerHTML=p.map(p=>`<div class="product-card"><div class="product-img" onclick="openLightbox(${p.id})"><img src="${p.img}" alt="${p.name}" loading="lazy">${p.badge?`<div class="product-badge ${p.badge==='New'?'new':p.badge==='Free'?'free':''}">${p.badge}</div>`:''}</div><div class="product-body"><div class="product-category">${p.category}</div><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div>${p.includes&&p.includes.length?`<ul class="product-includes">${p.includes.map(i=>`<li>${i}</li>`).join('')}</ul>`:''}<div class="product-footer">${p.free?`<div class="free-label">Free</div><a class="free-download-btn" href="${p.downloadUrl}" target="_blank" rel="noopener">Download →</a>`:`<div class="product-price"><span class="currency">GH₵</span>${p.price.toLocaleString()}</div><button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart</button>`}</div></div></div>`).join('');}
 function filterProducts(c,b){renderProducts(c);document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');}
 function addToCart(id){const p=products.find(x=>x.id===id);if(!p){showToast('Product not found');return;}if(cart.find(i=>i.id===p.id)){showToast('Already in cart');return;}cart.push(p);updateCartUI();showToast('✓ "'+p.name+'" added to cart');}
 function removeFromCart(id){cart=cart.filter(i=>i.id!==id);updateCartUI();}
@@ -608,6 +637,32 @@ function initiatePayment() {
   });
   handler.openIframe();
 }
+let lightboxImages = [];
+let lightboxIndex = 0;
+
+function openLightbox(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  lightboxImages = (p.images && p.images.length) ? p.images : [p.img];
+  lightboxIndex = 0;
+  renderLightboxImage();
+  document.getElementById('lightboxOverlay').classList.add('open');
+}
+
+function renderLightboxImage() {
+  document.getElementById('lightboxImg').src = lightboxImages[lightboxIndex];
+  document.getElementById('lightboxNext').style.display = lightboxImages.length > 1 ? 'flex' : 'none';
+}
+
+function nextLightboxImage() {
+  lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
+  renderLightboxImage();
+}
+
+function closeLightbox() {
+  document.getElementById('lightboxOverlay').classList.remove('open');
+}
+
 </script>
 </body>
 </html>

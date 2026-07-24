@@ -1,21 +1,6 @@
 [
-  { "id": 1, "name": "Two-Bedroom With Attached Single Room House", "category": "residential", "price": 397, "badge": "New", "img": "/images/1.jpeg", "images": ["/images/1.jpeg", "/images/2.jpeg"], "desc": "Complete architectural design package for a residential development comprising one 2-bedroom apartment and one 1-bedroom apartment. The package includes high-quality 3D visualizations, architectural drawings, and construction plans. A customization option is available for GH₵987, which includes all plans and elevations, block plan, site plan, professional stamping, and four printed copies delivered anywhere in Ghana.",
-    "includes": [
-    "3D Renderings",
-    "Floor Plan",
-    "Roof Plan",
-    "Foundation Plan",
-    "Elevations",
-    "Sections",
-    "PDF",
-    "Customization Option (GH₵987)",
-    "Block Plan",
-    "Site Plan",
-    "Professional Stamping",
-    "4 Printed Copies Delivered Anywhere in Ghana"
-  ]
-  },
-  { "id": 2, "name": "3 bedroom house", "category": "residential", "price": 397, "badge": "New", "img": "/images/3 bedroom house.jpeg", "desc": "Full design package including interior layouts and structural detail drawings.", "includes": ["Floor Plan", "Roof Plan", "Elevations", "Sections", "Interior Layout", "Structural Details", "PDF", "AutoCAD DWG"] },
+  {"id": 1, "name": "Two-Bedroom With Attached Single Room House — Standard Package", "category": "residential", "price": 397, "badge": "New", "img": "/images/1.jpeg", "images": ["/images/1.jpeg", "/images/2.jpeg"], "desc": "Complete architectural design package for a residential development comprising one 2-bedroom apartment and one 1-bedroom apartment.", "includes": ["3D Rendering", "Ground Floor Plan", "Front Elevation", "Back Elevation", "Left Elevation", "Right Elevation", "Sections", "Foundation Plan"] },
+{ "id": 15, "name": "Two-Bedroom With Attached Single Room House — Complete Package", "category": "residential", "price": 979, "badge": "Popular", "img": "/images/1.jpeg", "images": ["/images/1.jpeg", "/images/2.jpeg"], "desc": "Everything in the Standard Package, plus block plan, door & window schedule, and MEP drawings.", "includes": ["3D Rendering", "Ground Floor Plan", "Front Elevation", "Back Elevation", "Left Elevation", "Right Elevation", "Sections", "Foundation Plan", "Block Plan", "Door & Window Schedule", "MEP (Mechanical, Electrical & Plumbing)"], "customNote": "Want it fully customized — with your name, professional stamping & delivery anywhere in Ghana? <a href=\"tel:0244072436\">Call 0244 072 436</a> or <a href=\"forms.html\">Request a Quote →</a>" },  { "id": 2, "name": "3 bedroom house", "category": "residential", "price": 397, "badge": "New", "img": "/images/3 bedroom house.jpeg", "desc": "Full design package including interior layouts and structural detail drawings.", "includes": ["Floor Plan", "Roof Plan", "Elevations", "Sections", "Interior Layout", "Structural Details", "PDF", "AutoCAD DWG"] },
   { "id": 3, "name": "Two bedroom and one bedroom apartments for rentals", "category": "commercial", "price": 2400, "badge": "New", "img": "/images/Two bedroom and one bedroom apartments for rentals.jpeg", "desc": "3-storey office building with parking, fire exits and MEP schematics.", "includes": ["Floor Plans (3 Storeys)", "Elevations", "Sections", "Parking Layout", "Fire Exit Plan", "MEP Schematics", "PDF", "AutoCAD DWG"] },
   { "id": 4, "name": "Retail Shopfront Design", "category": "commercial", "price": 480, "badge": "", "img": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=70", "desc": "Commercial shopfront design package with signage zones and internal layout.", "includes": ["Shopfront Elevation", "Internal Layout", "Signage Zones", "PDF", "AutoCAD DWG"] },
   { "id": 5, "name": "Foundation Structural Set", "category": "structural", "price": 320, "badge": "", "img": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70", "desc": "Strip, raft and pad foundation drawings with engineering calculations.", "includes": ["Strip Foundation Drawing", "Raft Foundation Drawing", "Pad Foundation Drawing", "Engineering Calculations", "PDF", "AutoCAD DWG"] },

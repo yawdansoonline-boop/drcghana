@@ -148,6 +148,10 @@
   .product-includes { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
   .product-includes li { font-size: 11.5px; color: var(--text-dim); display: flex; align-items: center; gap: 5px; }
   .product-includes li::before { content: '✔'; color: var(--green-light); font-size: 10px; flex-shrink: 0; }
+  .product-divider { height: 0.5px; background: var(--mid); margin: 0.9rem 0; }
+.customize-note { font-size: 12px; color: var(--text-mid); line-height: 1.6; margin-bottom: 1rem; }
+.customize-note a { color: var(--gold-light); font-weight: 500; }
+.customize-note a:hover { text-decoration: underline; }
   .add-to-cart { padding: 8px 18px; border: 0.5px solid rgba(27,107,53,0.5); color: var(--green-light); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; border-radius: var(--radius); transition: all 0.2s; }
   .add-to-cart:hover { background: var(--green); color: var(--white); border-color: var(--green); }
 
@@ -335,6 +339,8 @@
   .lightbox-next { right: 8px; }
   .lightbox-close { top: -44px; right: 0; }
 }
+
+
 </style>
 </head>
 <body>
@@ -573,7 +579,7 @@
 <script>
 let products=[];
 let cart=[];
-function renderProducts(f){const g=document.getElementById('productsGrid');const p=f==='all'?products:products.filter(x=>x.category===f);g.innerHTML=p.map(p=>`<div class="product-card"><div class="product-img" onclick="openLightbox(${p.id})"><img src="${p.img}" alt="${p.name}" loading="lazy">${p.badge?`<div class="product-badge ${p.badge==='New'?'new':p.badge==='Free'?'free':''}">${p.badge}</div>`:''}</div><div class="product-body"><div class="product-category">${p.category}</div><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div>${p.includes&&p.includes.length?`<ul class="product-includes">${p.includes.map(i=>`<li>${i}</li>`).join('')}</ul>`:''}<div class="product-footer">${p.free?`<div class="free-label">Free</div><a class="free-download-btn" href="${p.downloadUrl}" target="_blank" rel="noopener">Download →</a>`:`<div class="product-price"><span class="currency">GH₵</span>${p.price.toLocaleString()}</div><button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart</button>`}</div></div></div>`).join('');}
+function renderProducts(f){const g=document.getElementById('productsGrid');const p=f==='all'?products:products.filter(x=>x.category===f);g.innerHTML=p.map(p=>`<div class="product-card"><div class="product-img" onclick="openLightbox(${p.id})"><img src="${p.img}" alt="${p.name}" loading="lazy">${p.badge?`<div class="product-badge ${p.badge==='New'?'new':p.badge==='Free'?'free':''}">${p.badge}</div>`:''}</div><div class="product-body"><div class="product-category">${p.category}</div><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div>${p.includes&&p.includes.length?`<ul class="product-includes">${p.includes.map(i=>`<li>${i}</li>`).join('')}</ul>`:''}${p.customNote?`<div class="product-divider"></div><p class="customize-note">${p.customNote}</p>`:''}<div class="product-footer">${p.free?`<div class="free-label">Free</div><a class="free-download-btn" href="${p.downloadUrl}" target="_blank" rel="noopener">Download →</a>`:`<div class="product-price"><span class="currency">GH₵</span>${p.price.toLocaleString()}</div><button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart</button>`}</div></div></div>`).join('');}
 function filterProducts(c,b){renderProducts(c);document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');}
 function addToCart(id){const p=products.find(x=>x.id===id);if(!p){showToast('Product not found');return;}if(cart.find(i=>i.id===p.id)){showToast('Already in cart');return;}cart.push(p);updateCartUI();showToast('✓ "'+p.name+'" added to cart');}
 function removeFromCart(id){cart=cart.filter(i=>i.id!==id);updateCartUI();}

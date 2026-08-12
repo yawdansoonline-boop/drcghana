@@ -1,0 +1,19 @@
+{
+  "name": "DRC Block Calculator",
+  "short_name": "Block Calc",
+  "description": "Block Calculator by DRC Ghana – Estimate blocks for your building & monitor your contractor",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1F3864",
+  "theme_color": "#1F3864",
+  "icons": [
+    {
+      "src": "./logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

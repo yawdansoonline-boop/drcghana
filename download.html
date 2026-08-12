@@ -166,9 +166,9 @@ const downloadLinks = {
     desc: 'Premium 3D rendered image — high resolution JPEG for presentations'
   },
   'Block Quantity Calculator (Mobile-Friendly)': {
-  url: 'https://docs.google.com/spreadsheets/d/11m9hn_D40N7AYDl51kM5Sb5ydato5Zk6/export?format=xlsx',
-  desc: 'Editable Excel block calculator with quick reference and site tracker sheets'
-},
+    url: '/tools/block-calculator/',
+    desc: 'Your interactive Block Quantity Calculator — bookmark this page for future use.'
+  },
 };
 
 // Only the reference is trusted from the URL — everything else must be
@@ -243,6 +243,8 @@ async function loadVerifiedDownloads() {
       const url = product ? product.url : '#';
       const desc = product ? product.desc : 'Contact us for your download link';
       const isReady = url !== 'YOUR_GOOGLE_DRIVE_LINK_HERE' && url !== '#';
+      const isTool = itemName === 'Block Quantity Calculator (Mobile-Friendly)';
+      const btnLabel = isTool ? 'Open Calculator →' : 'Download →';
 
       return `
       <div class="download-card">
@@ -252,7 +254,7 @@ async function loadVerifiedDownloads() {
           <div class="download-desc">${desc}</div>
         </div>
         ${isReady
-          ? `<a href="${url}" target="_blank" class="download-btn">Download →</a>`
+          ? `<a href="${url}" target="_blank" class="download-btn">${btnLabel}</a>`
           : `<a href="mailto:delrhema@gmail.com?subject=Download Request - ${encodeURIComponent(itemName)}&body=Transaction Reference: ${ref}" class="download-btn" style="background:var(--gold);color:var(--dark);">Request File →</a>`
         }
       </div>`;

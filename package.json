@@ -1,0 +1,9 @@
+{
+  "name": "drcghana",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DRCGHANA — architectural & structural design document store",
+  "dependencies": {
+    "nodemailer": "^6.9.14"
+  }
+}

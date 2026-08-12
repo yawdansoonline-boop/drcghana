@@ -12,6 +12,10 @@
 //    actually paid. This is what stops someone from paying a small amount
 //    while claiming an expensive bundle.
 // 4. Returns verified info to download.html only if both checks pass.
+// 5. NEW: on a verified success, sends the customer an email with links to
+//    everything they bought (via utils/mailer.js). If the email fails for
+//    any reason, it's logged but never blocks the response — the customer
+//    already paid and passed verification, so they still get access.
 //
 // NOTE: this reads ../../products.json — the single product list at your
 // repo root. Update prices there and both the storefront AND this check
@@ -23,6 +27,7 @@
 // Site -> Logs -> Functions -> verify-payment.
 
 const catalog = require('../../products.json');
+const { sendAccessEmail } = require('./utils/mailer'); // NEW
 
 exports.handler = async function (event) {
   if (event.httpMethod !== 'GET') {
@@ -100,7 +105,10 @@ exports.handler = async function (event) {
 
     // Independently recalculate what this order SHOULD cost, from our own
     // price list — never trust the amount the browser sent to Paystack.
+    // NEW: also collect the matched catalog entries — we need their
+    // downloadUrl/accessUrl + desc to build the access email below.
     let expectedTotalGHS = 0;
+    const matchedProducts = []; // NEW
     for (const name of itemNames) {
       const match = catalog.find((p) => p.name === name);
       if (!match) {
@@ -112,6 +120,7 @@ exports.handler = async function (event) {
         };
       }
       expectedTotalGHS += match.price;
+      matchedProducts.push(match); // NEW
     }
 
     const expectedTotalPesewas = Math.round(expectedTotalGHS * 100);
@@ -131,14 +140,27 @@ exports.handler = async function (event) {
 
     console.log('[verify-payment]', ref, '- verified OK');
 
+    const customerEmail = tx.customer ? tx.customer.email : '';
+
+    // NEW: send the access email. Wrapped so a mail-provider hiccup can
+    // never turn a successful, verified payment into a denied one.
+    if (customerEmail) {
+      try {
+        await sendAccessEmail(customerEmail, matchedProducts, ref);
+        console.log('[verify-payment]', ref, '- access email sent');
+      } catch (emailErr) {
+        console.error('[verify-payment]', ref, '- email send failed:', emailErr.message);
+      }
+    }
+
     return {
       statusCode: 200,
       body: JSON.stringify({
         verified: true,
         reference: tx.reference,
         amountPaid: tx.amount / 100, // Paystack amounts are in pesewas
-        email: tx.customer ? tx.customer.email : '',
-        products, // pipe-separated product names, exactly like before
+        email: customerEmail,
+        products, // pipe-separated product names, exactly like before — download.html is unchanged
       }),
     };
   } catch (err) {

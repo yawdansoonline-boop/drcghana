@@ -11,6 +11,11 @@
 //   - Normal file products use `downloadUrl`.
 //   - Products with NEITHER (not ready yet) show a "we'll notify you"
 //     message instead of a dead button — see resolveAccess() below.
+//
+// SPAM NOTE: this now sends BOTH an html and a plain-text version, and the
+// html is deliberately plain (no big colored buttons/banners) — heavily
+// styled "marketing-looking" HTML from a personal Gmail address is one of
+// the most common reasons transactional mail lands in spam.
 
 const nodemailer = require('nodemailer');
 
@@ -33,44 +38,64 @@ function resolveAccess(product) {
   return { ready: false };
 }
 
+function fullUrl(url) {
+  return url.startsWith('http') ? url : `https://drcghana.org${url}`;
+}
+
 function buildEmailHtml(products, reference) {
   const rows = products
     .map((p) => {
       const access = resolveAccess(p);
-
       const actionHtml = access.ready
-        ? (() => {
-            const fullUrl = access.url.startsWith('http') ? access.url : `https://drcghana.org${access.url}`;
-            return `<a href="${fullUrl}" style="display:inline-block;margin-top:8px;padding:8px 16px;background:#0a5c36;color:#fff;text-decoration:none;border-radius:4px;">${access.label}</a>`;
-          })()
-        : `<div style="margin-top:8px;padding:8px 16px;background:#fdf5e6;color:#8a6d1a;border:1px solid #e8c96a;border-radius:4px;font-size:13px;display:inline-block;">
-             We're finalizing this file — we'll email you directly as soon as it's ready.
-           </div>`;
+        ? `<a href="${fullUrl(access.url)}">${access.label} →</a>`
+        : `<em>We're finalizing this file — we'll email you directly as soon as it's ready.</em>`;
 
       return `
-      <tr>
-        <td style="padding:12px 0;border-bottom:1px solid #eee;">
-          <strong>${p.name}</strong><br/>
-          <span style="color:#555;font-size:14px;">${p.desc || ''}</span><br/>
-          ${actionHtml}
-        </td>
-      </tr>`;
+        <p style="margin:0 0 4px;"><strong>${p.name}</strong></p>
+        <p style="margin:0 0 4px;color:#555;font-size:14px;">${p.desc || ''}</p>
+        <p style="margin:0 0 20px;">${actionHtml}</p>`;
     })
     .join('');
 
   return `
-    <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
-      <h2 style="color:#0a5c36;">Thanks for your purchase — DRCGHANA</h2>
-      <p>Your payment (ref: <strong>${reference}</strong>) has been confirmed. Here's access to what you bought:</p>
-      <table style="width:100%;border-collapse:collapse;">${rows}</table>
-      <p style="margin-top:24px;font-size:13px;color:#888;">
-        Bookmark these links for future use. If you have any issues, just reply to this email.
+    <div style="font-family:Arial,sans-serif;font-size:15px;color:#222;max-width:520px;">
+      <p>Hi,</p>
+      <p>Thanks for your purchase from DRCGHANA. Your payment (reference <strong>${reference}</strong>) has been confirmed. Here's your access:</p>
+      ${rows}
+      <p style="font-size:13px;color:#888;margin-top:24px;">
+        Please save this email for future reference. If you have any issues, just reply here or WhatsApp us at 0244 072 436.
       </p>
+      <p style="font-size:13px;color:#888;">— DRCGHANA</p>
     </div>`;
+}
+
+function buildEmailText(products, reference) {
+  const lines = products.map((p) => {
+    const access = resolveAccess(p);
+    const line = access.ready
+      ? `${p.name}: ${fullUrl(access.url)}`
+      : `${p.name}: still being finalized — we'll email you when it's ready.`;
+    return line;
+  });
+
+  return [
+    'Hi,',
+    '',
+    `Thanks for your purchase from DRCGHANA. Your payment (reference ${reference}) has been confirmed.`,
+    '',
+    'Your access:',
+    ...lines,
+    '',
+    'Please save this email for future reference.',
+    'Any issues, reply to this email or WhatsApp us at 0244 072 436.',
+    '',
+    '— DRCGHANA',
+  ].join('\n');
 }
 
 async function sendAccessEmail(toEmail, products, reference) {
   const html = buildEmailHtml(products, reference);
+  const text = buildEmailText(products, reference);
   const subject =
     products.length === 1
       ? `Your ${products[0].name} is ready`
@@ -80,6 +105,7 @@ async function sendAccessEmail(toEmail, products, reference) {
     from: `"DRCGHANA" <${process.env.GMAIL_USER}>`,
     to: toEmail,
     subject,
+    text,
     html,
   });
 }
